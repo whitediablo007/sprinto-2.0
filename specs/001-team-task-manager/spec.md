@@ -430,10 +430,18 @@
 
 ## Уточнения
 
-### Сессия 2025-11-14
+### Сессия 2025-11-14 (Backend)
 
 - Q: Какой инструмент сборки использовать для backend проекта? → A: Gradle с Kotlin DSL (build.gradle.kts)
 - Q: Какой паттерн Dependency Injection использовать в Spring компонентах? → A: Constructor Injection с @RequiredArgsConstructor (Lombok)
 - Q: Какая стратегия обработки исключений для REST API? → A: Централизованная с @ControllerAdvice и @ExceptionHandler
 - Q: Какие уровни логирования использовать для приложения? → A: INFO для бизнес-операций, DEBUG для development окружения
 - Q: Какой подход к валидации входных данных использовать? → A: Bean Validation (JSR-380) на всех DTO с @Valid аннотацией
+
+### Сессия 2025-11-14 (Frontend)
+
+- Q: Какую стратегию state management использовать в Angular приложении? → A: NgRx для глобального состояния + Signals для локального компонентного состояния
+- Q: Какой паттерн архитектуры компонентов использовать? → A: Smart/Presentational (Container/Dumb) разделение компонентов
+- Q: Какой подход к Dependency Injection использовать в Angular? → A: Hybrid - inject() для новых компонентов, constructor для сервисов с параметрами
+- Q: Какую стратегию Change Detection использовать? → A: OnPush для Presentational компонентов, Default для Smart при необходимости
+- Q: Какой подход к формам использовать в Angular? → A: Reactive Forms для всех форм приложения

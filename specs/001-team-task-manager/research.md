@@ -120,37 +120,253 @@
 
 ---
 
-## 5. State Management на Frontend (NgRx)
+## 5. State Management на Frontend (NgRx + Signals)
 
-### Решение: NgRx (Redux pattern для Angular) с Entity adapter
+### Решение: Hybrid подход - NgRx для глобального состояния + Angular Signals для локального
 
 **Обоснование**:
-- **Предсказуемое состояние**: Single source of truth для всего состояния приложения
-- **Time-travel debugging**: Redux DevTools для отладки изменений состояния
-- **Отделение side effects**: NgRx Effects для асинхронных операций (API calls, WebSocket)
-- **Селекторы с мемоизацией**: Эффективное чтение данных без пересчетов
-- **Entity adapter**: Готовые редьюсеры для CRUD операций с нормализованными данными
+- **NgRx для enterprise state**: Проверенный Redux pattern для сложных данных с cross-cutting concerns
+- **Signals для UI state**: Эффективное управление локальным состоянием компонентов (Angular 18+)
+- **Лучшее из обоих миров**: NgRx DevTools + Signals performance и простота
+- **Fine-grained reactivity**: Signals обеспечивают точечные обновления без лишних re-renders
+- **Совместимость**: NgRx и Signals прекрасно работают вместе через `toSignal()` и `toObservable()`
 
-**Структура Store**:
+**NgRx Store (глобальное состояние)**:
 ```
-AppState
+AppState (NgRx Store)
 ├── auth: AuthState (user, token, isAuthenticated)
 ├── projects: ProjectsState (entities, selectedId, loading)
 ├── tasks: TasksState (entities, filters, selectedId)
 ├── timeEntries: TimeEntriesState (entities, activeTimer)
 ├── notifications: NotificationsState (entities, unreadCount)
-├── ui: UIState (sidebar, modals, loading indicators)
 └── router: RouterState (current route, params)
 ```
 
+**Signals (локальное состояние компонентов)**:
+- UI state: `sidebarOpen = signal(false)`, `selectedTab = signal('overview')`
+- Form state: `isSubmitting = signal(false)`, `validationErrors = signal([])`
+- Loading indicators: `isLoading = signal(false)`
+- Modal state: `showModal = signal(false)`, `modalData = signal(null)`
+- Filters: `searchQuery = signal('')`, `selectedPriority = signal<Priority | null>(null)`
+
+**Интеграция NgRx с Signals**:
+```typescript
+// В компонентах
+readonly user = toSignal(this.store.select(selectCurrentUser));
+readonly projects = toSignal(this.store.select(selectAllProjects));
+
+// Computed signals на основе store
+readonly hasActiveTimer = computed(() => 
+  this.timeEntries()?.some(e => !e.endTime) ?? false
+);
+```
+
 **Паттерны**:
-- **Feature stores**: Каждый feature module имеет свой state slice
-- **Facade service**: Скрывает детали NgRx от компонентов, предоставляет простой API
-- **Optimistic updates**: Для drag & drop операций (обновление UI до ответа сервера)
+- **Feature stores (NgRx)**: Каждый feature module имеет свой state slice
+- **Facade service**: Скрывает детали NgRx, предоставляет signals API
+- **Signal inputs**: `@Input() с transform` для реактивных inputs (Angular 17.1+)
+- **Signal-based effects**: NgRx Effects с `toObservable(signal)` для реактивности
+- **Optimistic updates**: NgRx для оптимистичных обновлений, Signals для UI feedback
+
+**Архитектура компонентов (Smart/Presentational)**:
+
+**Smart Components (Container)**:
+- Управляют бизнес-логикой и состоянием
+- Взаимодействуют с NgRx Store и сервисами
+- **DI**: `inject()` для сервисов без параметров, constructor для сложных случаев
+- Обрабатывают события от Presentational компонентов
+- Пример: `TaskListContainerComponent`, `ProjectDashboardContainerComponent`
+- Расположение: `features/{feature}/containers/`
+
+**Presentational Components (Dumb)**:
+- Получают данные через `@Input()` (preferably signals)
+- Эмитят события через `@Output()`
+- Не знают о NgRx Store или сервисах
+- Чистые, переиспользуемые, легко тестируемые
+- **OnPush change detection** для оптимизации производительности
+- Пример: `TaskCardComponent`, `TaskFormComponent`, `TimerDisplayComponent`
+- Расположение: `features/{feature}/components/` или `shared/components/`
+
+**Пример структуры**:
+```
+features/tasks/
+├── containers/
+│   ├── task-list-container.component.ts    # Smart: Store + Logic
+│   └── task-details-container.component.ts # Smart: Store + Logic
+├── components/
+│   ├── task-card.component.ts              # Dumb: @Input/@Output
+│   ├── task-form.component.ts              # Dumb: ReactiveForm
+│   └── task-filters.component.ts           # Dumb: @Input/@Output
+└── store/
+    ├── tasks.actions.ts
+    ├── tasks.reducer.ts
+    └── tasks.selectors.ts
+```
+
+**Dependency Injection (Hybrid подход)**:
+
+**Используем `inject()` (Angular 14+)**:
+```typescript
+@Component({...})
+export class TaskListContainerComponent {
+  // Простые сервисы без параметров - inject()
+  private store = inject(Store);
+  private tasksFacade = inject(TasksFacade);
+  private router = inject(Router);
+  private destroyRef = inject(DestroyRef);
+  
+  // Signals из store
+  readonly tasks = toSignal(this.store.select(selectAllTasks));
+  readonly loading = toSignal(this.store.select(selectTasksLoading));
+}
+```
+
+**Используем constructor injection**:
+```typescript
+@Injectable()
+export class TasksApiService {
+  // Когда нужны параметры или сложная логика в конструкторе
+  constructor(
+    private http: HttpClient,
+    @Inject(API_BASE_URL) private apiUrl: string,
+    @Optional() private logger?: LoggerService
+  ) {
+    this.logger?.info('TasksApiService initialized');
+  }
+}
+```
+
+**Преимущества hybrid подхода**:
+- `inject()` упрощает код компонентов (меньше boilerplate)
+- `inject()` позволяет DI в functional context (guards, interceptors)
+- Constructor явно показывает обязательные зависимости с параметрами
+- Соответствует Angular best practices и future direction
+
+**Change Detection Strategy**:
+
+**OnPush для Presentational компонентов**:
+```typescript
+@Component({
+  selector: 'app-task-card',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: `...`
+})
+export class TaskCardComponent {
+  @Input() task!: Task;  // Immutable inputs
+  @Output() edit = new EventEmitter<Task>();
+  
+  // Signals автоматически работают с OnPush
+  isExpanded = signal(false);
+}
+```
+
+**Default для Smart компонентов (при необходимости)**:
+```typescript
+@Component({
+  selector: 'app-task-list-container',
+  // changeDetection: ChangeDetectionStrategy.Default (по умолчанию)
+  template: `...`
+})
+export class TaskListContainerComponent {
+  // Async операции, WebSocket updates могут требовать Default
+  // Signals из store с toSignal() работают с обеими стратегиями
+  readonly tasks = toSignal(this.store.select(selectAllTasks));
+}
+```
+
+**Правила для OnPush**:
+- Все @Input должны быть immutable (или использовать OnChanges)
+- Signals автоматически триггерят change detection в OnPush
+- Async pipe автоматически работает с OnPush
+- События (@Output, DOM events) триггерят change detection
+- Избегать mutable операций над @Input данными
+
+**Performance преимущества**:
+- OnPush компоненты проверяются только при изменении inputs или событиях
+- Signals обеспечивают fine-grained reactivity без полной проверки дерева
+- Сокращение проверок change detection на 60-80% для больших списков
+- Критично для оптимизации task lists, календаря, таблиц времени
+
+**Reactive Forms (для всех форм)**:
+
+**Обоснование выбора**:
+- **Type safety**: TypeScript типы для FormControl, FormGroup, FormArray
+- **Testability**: Тестирование логики форм без DOM
+- **Программный контроль**: Динамическое управление валидаторами и значениями
+- **Композиция**: Nested FormGroups, FormArray для динамических списков
+- **Reactive validation**: Асинхронные валидаторы, cross-field validation
+- **NgRx интеграция**: Легкое сохранение состояния форм в store
+
+**Пример использования**:
+```typescript
+@Component({
+  selector: 'app-task-form',
+  changeDetection: ChangeDetectionStrategy.OnPush
+})
+export class TaskFormComponent implements OnInit {
+  private fb = inject(FormBuilder);
+  
+  taskForm = this.fb.group({
+    title: ['', [Validators.required, Validators.maxLength(255)]],
+    description: [''],
+    projectId: [null as number | null, Validators.required],
+    assigneeId: [null as number | null],
+    status: ['NEW' as TaskStatus, Validators.required],
+    priority: ['MEDIUM' as TaskPriority, Validators.required],
+    deadline: [null as Date | null],
+    estimatedHours: [null as number | null, [Validators.min(0), Validators.max(999)]],
+    labels: this.fb.array<number>([]),  // FormArray для меток
+    parentTaskId: [null as number | null]
+  });
+  
+  // Custom validator для бизнес-правил
+  get labels(): FormArray {
+    return this.taskForm.get('labels') as FormArray;
+  }
+  
+  addLabel(labelId: number): void {
+    this.labels.push(this.fb.control(labelId));
+  }
+  
+  // Async validator для проверки уникальности
+  titleValidator(): AsyncValidatorFn {
+    return (control: AbstractControl): Observable<ValidationErrors | null> => {
+      return this.tasksService.checkTitleUnique(control.value).pipe(
+        map(isUnique => isUnique ? null : { titleExists: true }),
+        catchError(() => of(null))
+      );
+    };
+  }
+}
+```
+
+**Формы в приложении**:
+- **Task Form**: создание/редактирование задач (nested forms для подзадач)
+- **Project Form**: создание/редактирование проектов
+- **Time Entry Form**: ручное добавление времени (date/time pickers, validation)
+- **User Settings Form**: настройки уведомлений (toggle groups)
+- **Filter Forms**: фильтры задач (динамические FormArray для множественных условий)
+- **Login/Register Forms**: аутентификация (async validators для email)
+
+**Валидация**:
+- Built-in validators: `required`, `minLength`, `maxLength`, `email`, `pattern`
+- Custom validators: уникальность, бизнес-правила, cross-field validation
+- Async validators: проверка на бэкенде (debounce для производительности)
+- Error messages: централизованная мапа ошибок с i18n
+
+**Интеграция с Signals**:
+```typescript
+// Reactive form values как signal
+readonly formValue = toSignal(this.taskForm.valueChanges);
+readonly isFormValid = toSignal(this.taskForm.statusChanges.pipe(
+  map(status => status === 'VALID')
+));
+```
 
 **Рассмотренные альтернативы**:
-- **Сервисы с BehaviorSubject**: Простота, но плохая масштабируемость, нет time-travel debugging, сложно управлять сложным состоянием
-- **Akita**: Менее verbose чем NgRx, но меньше community support и меньше инструментов
+- **Только NgRx**: Verbose для простого UI state, всё через store - избыточно
+- **Только Signals**: Нет DevTools, сложнее для enterprise patterns (effects, entity management)
+- **Akita**: Меньше поддержки, не интегрирована с Signals нативно
 
 ---
 

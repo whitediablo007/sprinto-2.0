@@ -154,13 +154,26 @@ frontend/
 │   │   │   └── models/
 │   │   ├── features/                # Feature modules
 │   │   │   ├── auth/
-│   │   │   │   ├── components/
+│   │   │   │   ├── containers/      # Smart components (Store + Logic)
+│   │   │   │   ├── components/      # Dumb components (@Input/@Output)
 │   │   │   │   ├── store/           # NgRx: actions, reducers, effects, selectors
 │   │   │   │   └── auth.module.ts
 │   │   │   ├── dashboard/
+│   │   │   │   ├── containers/
+│   │   │   │   ├── components/
+│   │   │   │   └── store/
 │   │   │   ├── projects/
+│   │   │   │   ├── containers/
+│   │   │   │   ├── components/
+│   │   │   │   └── store/
 │   │   │   ├── tasks/
+│   │   │   │   ├── containers/      # task-list-container, task-details-container
+│   │   │   │   ├── components/      # task-card, task-form, task-filters
+│   │   │   │   └── store/
 │   │   │   ├── time-tracking/
+│   │   │   │   ├── containers/
+│   │   │   │   ├── components/      # timer-display, time-entry-form
+│   │   │   │   └── store/
 │   │   │   ├── reports/
 │   │   │   ├── calendar/
 │   │   │   ├── notifications/
