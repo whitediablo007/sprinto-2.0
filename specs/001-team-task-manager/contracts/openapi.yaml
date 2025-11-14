@@ -1,0 +1,2272 @@
+openapi: 3.0.3
+info:
+  title: Team Task Manager API
+  description: |
+    REST API для системы управления проектами и задачами в малых командах.
+    
+    ## Основные возможности
+    - Управление проектами и задачами
+    - Учет рабочего времени (таймеры и ручной ввод)
+    - Планирование и отчетность
+    - Уведомления
+    - Интеграция с Google Calendar
+    
+    ## Аутентификация
+    Используется JWT-based аутентификация. Access token передается в заголовке:
+    ```
+    Authorization: Bearer {access_token}
+    ```
+    
+    ## Real-time обновления
+    Для real-time функций (таймеры, уведомления) используется WebSocket.
+    См. `websocket.md` для деталей протокола.
+    
+  version: 1.0.0
+  contact:
+    name: API Support
+    email: support@sprinto.com
+
+servers:
+  - url: http://localhost:8080/api
+    description: Development server
+  - url: https://api.sprinto.com/api
+    description: Production server
+
+tags:
+  - name: auth
+    description: Аутентификация и управление токенами
+  - name: users
+    description: Управление пользователями
+  - name: projects
+    description: Управление проектами
+  - name: tasks
+    description: Управление задачами
+  - name: time-tracking
+    description: Учет рабочего времени
+  - name: comments
+    description: Комментарии к задачам
+  - name: tags
+    description: Метки для задач
+  - name: files
+    description: Файлы, прикрепленные к задачам
+  - name: notifications
+    description: Уведомления
+  - name: reports
+    description: Отчеты и аналитика
+  - name: calendar
+    description: Интеграция с Google Calendar
+
+security:
+  - bearerAuth: []
+
+paths:
+  # ========== Authentication ==========
+  /auth/register:
+    post:
+      tags: [auth]
+      summary: Регистрация нового пользователя
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '201':
+          description: Пользователь успешно зарегистрирован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          description: Email уже используется
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /auth/login:
+    post:
+      tags: [auth]
+      summary: Вход в систему
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Успешная аутентификация
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /auth/refresh:
+    post:
+      tags: [auth]
+      summary: Обновление access token
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [refreshToken]
+              properties:
+                refreshToken:
+                  type: string
+                  example: "eyJhbGciOiJIUzI1NiIs..."
+      responses:
+        '200':
+          description: Токен успешно обновлен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /auth/logout:
+    post:
+      tags: [auth]
+      summary: Выход из системы
+      responses:
+        '204':
+          description: Успешный выход
+
+  /auth/password-reset/request:
+    post:
+      tags: [auth]
+      summary: Запрос на сброс пароля
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email]
+              properties:
+                email:
+                  type: string
+                  format: email
+      responses:
+        '200':
+          description: Email с инструкциями отправлен
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /auth/password-reset/confirm:
+    post:
+      tags: [auth]
+      summary: Подтверждение сброса пароля
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PasswordResetConfirm'
+      responses:
+        '200':
+          description: Пароль успешно изменен
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  # ========== Users ==========
+  /users/me:
+    get:
+      tags: [users]
+      summary: Получить профиль текущего пользователя
+      responses:
+        '200':
+          description: Профиль пользователя
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+
+    put:
+      tags: [users]
+      summary: Обновить профиль текущего пользователя
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserRequest'
+      responses:
+        '200':
+          description: Профиль обновлен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+
+  /users/me/settings:
+    get:
+      tags: [users]
+      summary: Получить настройки пользователя
+      responses:
+        '200':
+          description: Настройки пользователя
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserSettings'
+
+    put:
+      tags: [users]
+      summary: Обновить настройки пользователя
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserSettings'
+      responses:
+        '200':
+          description: Настройки обновлены
+
+  /users/search:
+    get:
+      tags: [users]
+      summary: Поиск пользователей (для добавления в проект)
+      parameters:
+        - name: query
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Поисковый запрос (email или имя)
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 10
+            maximum: 50
+      responses:
+        '200':
+          description: Список найденных пользователей
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserSearchResult'
+
+  # ========== Projects ==========
+  /projects:
+    get:
+      tags: [projects]
+      summary: Получить список проектов пользователя
+      parameters:
+        - name: status
+          in: query
+          schema:
+            $ref: '#/components/schemas/ProjectStatus'
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: Список проектов
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectPage'
+
+    post:
+      tags: [projects]
+      summary: Создать новый проект
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateProjectRequest'
+      responses:
+        '201':
+          description: Проект создан
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+
+  /projects/{projectId}:
+    parameters:
+      - $ref: '#/components/parameters/projectId'
+    
+    get:
+      tags: [projects]
+      summary: Получить детали проекта
+      responses:
+        '200':
+          description: Детали проекта
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectDetails'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      tags: [projects]
+      summary: Обновить проект
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateProjectRequest'
+      responses:
+        '200':
+          description: Проект обновлен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+
+    delete:
+      tags: [projects]
+      summary: Удалить проект
+      responses:
+        '204':
+          description: Проект удален
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /projects/{projectId}/members:
+    parameters:
+      - $ref: '#/components/parameters/projectId'
+    
+    get:
+      tags: [projects]
+      summary: Получить список участников проекта
+      responses:
+        '200':
+          description: Список участников
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProjectMember'
+
+    post:
+      tags: [projects]
+      summary: Добавить участника в проект
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddProjectMemberRequest'
+      responses:
+        '201':
+          description: Участник добавлен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectMember'
+
+  /projects/{projectId}/members/{userId}:
+    parameters:
+      - $ref: '#/components/parameters/projectId'
+      - name: userId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    
+    put:
+      tags: [projects]
+      summary: Обновить роль участника
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [role]
+              properties:
+                role:
+                  $ref: '#/components/schemas/ProjectRole'
+      responses:
+        '200':
+          description: Роль обновлена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectMember'
+
+    delete:
+      tags: [projects]
+      summary: Удалить участника из проекта
+      responses:
+        '204':
+          description: Участник удален
+
+  /projects/{projectId}/dashboard:
+    parameters:
+      - $ref: '#/components/parameters/projectId'
+    
+    get:
+      tags: [projects]
+      summary: Получить дашборд проекта
+      responses:
+        '200':
+          description: Дашборд проекта с метриками
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectDashboard'
+
+  # ========== Tasks ==========
+  /tasks:
+    get:
+      tags: [tasks]
+      summary: Получить список задач с фильтрацией
+      parameters:
+        - name: projectId
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: assigneeId
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: status
+          in: query
+          schema:
+            $ref: '#/components/schemas/TaskStatus'
+        - name: priority
+          in: query
+          schema:
+            $ref: '#/components/schemas/TaskPriority'
+        - name: parentTaskId
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: tagIds
+          in: query
+          schema:
+            type: array
+            items:
+              type: string
+              format: uuid
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          schema:
+            type: integer
+            default: 50
+      responses:
+        '200':
+          description: Список задач
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskPage'
+
+    post:
+      tags: [tasks]
+      summary: Создать новую задачу
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTaskRequest'
+      responses:
+        '201':
+          description: Задача создана
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+
+  /tasks/{taskId}:
+    parameters:
+      - $ref: '#/components/parameters/taskId'
+    
+    get:
+      tags: [tasks]
+      summary: Получить детали задачи
+      responses:
+        '200':
+          description: Детали задачи
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskDetails'
+
+    put:
+      tags: [tasks]
+      summary: Обновить задачу
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateTaskRequest'
+      responses:
+        '200':
+          description: Задача обновлена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+
+    delete:
+      tags: [tasks]
+      summary: Удалить задачу
+      responses:
+        '204':
+          description: Задача удалена
+
+  /tasks/{taskId}/subtasks:
+    parameters:
+      - $ref: '#/components/parameters/taskId'
+    
+    get:
+      tags: [tasks]
+      summary: Получить подзадачи
+      responses:
+        '200':
+          description: Список подзадач
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Task'
+
+  /tasks/{taskId}/dependencies:
+    parameters:
+      - $ref: '#/components/parameters/taskId'
+    
+    get:
+      tags: [tasks]
+      summary: Получить зависимости задачи
+      responses:
+        '200':
+          description: Зависимости задачи
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  blocking:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TaskRef'
+                  dependentOn:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TaskRef'
+
+    post:
+      tags: [tasks]
+      summary: Добавить зависимость
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [blockingTaskId]
+              properties:
+                blockingTaskId:
+                  type: string
+                  format: uuid
+      responses:
+        '201':
+          description: Зависимость создана
+
+  /tasks/{taskId}/history:
+    parameters:
+      - $ref: '#/components/parameters/taskId'
+    
+    get:
+      tags: [tasks]
+      summary: Получить историю изменений задачи
+      responses:
+        '200':
+          description: История изменений
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TaskHistoryEntry'
+
+  # ========== Time Tracking ==========
+  /time-entries:
+    get:
+      tags: [time-tracking]
+      summary: Получить записи времени с фильтрацией
+      parameters:
+        - name: userId
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: taskId
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: projectId
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: startDate
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: endDate
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          schema:
+            type: integer
+            default: 50
+      responses:
+        '200':
+          description: Список записей времени
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TimeEntryPage'
+
+    post:
+      tags: [time-tracking]
+      summary: Создать запись времени (ручной ввод)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTimeEntryRequest'
+      responses:
+        '201':
+          description: Запись создана
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TimeEntry'
+
+  /time-entries/{entryId}:
+    parameters:
+      - name: entryId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    
+    get:
+      tags: [time-tracking]
+      summary: Получить детали записи времени
+      responses:
+        '200':
+          description: Детали записи
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TimeEntry'
+
+    put:
+      tags: [time-tracking]
+      summary: Обновить запись времени
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateTimeEntryRequest'
+      responses:
+        '200':
+          description: Запись обновлена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TimeEntry'
+
+    delete:
+      tags: [time-tracking]
+      summary: Удалить запись времени (soft delete)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [reason]
+              properties:
+                reason:
+                  type: string
+      responses:
+        '204':
+          description: Запись удалена
+
+  /time-entries/timer/start:
+    post:
+      tags: [time-tracking]
+      summary: Запустить таймер
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [taskId]
+              properties:
+                taskId:
+                  type: string
+                  format: uuid
+                description:
+                  type: string
+      responses:
+        '201':
+          description: Таймер запущен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TimeEntry'
+        '409':
+          description: У пользователя уже есть активный таймер
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /time-entries/timer/stop:
+    post:
+      tags: [time-tracking]
+      summary: Остановить активный таймер
+      responses:
+        '200':
+          description: Таймер остановлен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TimeEntry'
+        '404':
+          description: Активный таймер не найден
+
+  /time-entries/timer/active:
+    get:
+      tags: [time-tracking]
+      summary: Получить активный таймер пользователя
+      responses:
+        '200':
+          description: Активный таймер
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActiveTimer'
+        '404':
+          description: Активного таймера нет
+
+  # ========== Comments ==========
+  /tasks/{taskId}/comments:
+    parameters:
+      - $ref: '#/components/parameters/taskId'
+    
+    get:
+      tags: [comments]
+      summary: Получить комментарии задачи
+      responses:
+        '200':
+          description: Список комментариев
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Comment'
+
+    post:
+      tags: [comments]
+      summary: Добавить комментарий
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCommentRequest'
+      responses:
+        '201':
+          description: Комментарий создан
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Comment'
+
+  /comments/{commentId}:
+    parameters:
+      - name: commentId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    
+    put:
+      tags: [comments]
+      summary: Обновить комментарий
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [text]
+              properties:
+                text:
+                  type: string
+      responses:
+        '200':
+          description: Комментарий обновлен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Comment'
+
+    delete:
+      tags: [comments]
+      summary: Удалить комментарий
+      responses:
+        '204':
+          description: Комментарий удален
+
+  # ========== Tags ==========
+  /tags:
+    get:
+      tags: [tags]
+      summary: Получить список меток
+      parameters:
+        - name: projectId
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Фильтр по проекту (пустой = глобальные метки)
+        - name: global
+          in: query
+          schema:
+            type: boolean
+          description: Только глобальные метки
+      responses:
+        '200':
+          description: Список меток
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Tag'
+
+    post:
+      tags: [tags]
+      summary: Создать метку
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTagRequest'
+      responses:
+        '201':
+          description: Метка создана
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tag'
+
+  /tags/{tagId}:
+    parameters:
+      - name: tagId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    
+    put:
+      tags: [tags]
+      summary: Обновить метку
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateTagRequest'
+      responses:
+        '200':
+          description: Метка обновлена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tag'
+
+    delete:
+      tags: [tags]
+      summary: Удалить метку
+      responses:
+        '204':
+          description: Метка удалена
+
+  # ========== Files ==========
+  /tasks/{taskId}/files:
+    parameters:
+      - $ref: '#/components/parameters/taskId'
+    
+    get:
+      tags: [files]
+      summary: Получить список файлов задачи
+      responses:
+        '200':
+          description: Список файлов
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/File'
+
+    post:
+      tags: [files]
+      summary: Загрузить файл
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file]
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '201':
+          description: Файл загружен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/File'
+
+  /files/{fileId}:
+    parameters:
+      - name: fileId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    
+    get:
+      tags: [files]
+      summary: Скачать файл
+      responses:
+        '200':
+          description: Файл
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+
+    delete:
+      tags: [files]
+      summary: Удалить файл
+      responses:
+        '204':
+          description: Файл удален
+
+  # ========== Notifications ==========
+  /notifications:
+    get:
+      tags: [notifications]
+      summary: Получить список уведомлений
+      parameters:
+        - name: unreadOnly
+          in: query
+          schema:
+            type: boolean
+            default: false
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: Список уведомлений
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationPage'
+
+  /notifications/{notificationId}/read:
+    parameters:
+      - name: notificationId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    
+    post:
+      tags: [notifications]
+      summary: Пометить уведомление как прочитанное
+      responses:
+        '200':
+          description: Уведомление помечено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Notification'
+
+  /notifications/read-all:
+    post:
+      tags: [notifications]
+      summary: Пометить все уведомления как прочитанные
+      responses:
+        '204':
+          description: Все уведомления помечены
+
+  /notifications/unread-count:
+    get:
+      tags: [notifications]
+      summary: Получить количество непрочитанных уведомлений
+      responses:
+        '200':
+          description: Количество
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: integer
+
+  # ========== Reports ==========
+  /reports/projects/{projectId}:
+    parameters:
+      - $ref: '#/components/parameters/projectId'
+    
+    get:
+      tags: [reports]
+      summary: Получить отчет по проекту
+      parameters:
+        - name: startDate
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date-time
+        - name: endDate
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date-time
+      responses:
+        '200':
+          description: Отчет по проекту
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectReport'
+
+  /reports/projects/{projectId}/export:
+    parameters:
+      - $ref: '#/components/parameters/projectId'
+    
+    get:
+      tags: [reports]
+      summary: Экспорт отчета по проекту
+      parameters:
+        - name: startDate
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date-time
+        - name: endDate
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date-time
+        - name: format
+          in: query
+          required: true
+          schema:
+            type: string
+            enum: [xlsx, csv]
+      responses:
+        '200':
+          description: Файл отчета
+          content:
+            application/vnd.openxmlformats-officedocument.spreadsheetml.sheet:
+              schema:
+                type: string
+                format: binary
+            text/csv:
+              schema:
+                type: string
+                format: binary
+
+  /reports/personal:
+    get:
+      tags: [reports]
+      summary: Получить личный отчет
+      parameters:
+        - name: startDate
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date-time
+        - name: endDate
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date-time
+      responses:
+        '200':
+          description: Личный отчет
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PersonalReport'
+
+  /reports/dashboard/personal:
+    get:
+      tags: [reports]
+      summary: Получить личный дашборд
+      responses:
+        '200':
+          description: Личный дашборд
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PersonalDashboard'
+
+  /reports/dashboard/admin:
+    get:
+      tags: [reports]
+      summary: Получить административный дашборд
+      responses:
+        '200':
+          description: Административный дашборд
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminDashboard'
+
+  # ========== Calendar Integration ==========
+  /calendar/oauth/url:
+    get:
+      tags: [calendar]
+      summary: Получить URL для OAuth авторизации Google
+      responses:
+        '200':
+          description: URL авторизации
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  authUrl:
+                    type: string
+                    format: uri
+
+  /calendar/oauth/callback:
+    post:
+      tags: [calendar]
+      summary: Обработка OAuth callback
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [code]
+              properties:
+                code:
+                  type: string
+                  description: Authorization code от Google
+      responses:
+        '200':
+          description: Календарь подключен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CalendarSettings'
+
+  /calendar/settings:
+    get:
+      tags: [calendar]
+      summary: Получить настройки календаря
+      responses:
+        '200':
+          description: Настройки календаря
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CalendarSettings'
+        '404':
+          description: Календарь не подключен
+
+    put:
+      tags: [calendar]
+      summary: Обновить настройки синхронизации
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCalendarSettingsRequest'
+      responses:
+        '200':
+          description: Настройки обновлены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CalendarSettings'
+
+    delete:
+      tags: [calendar]
+      summary: Отключить календарь
+      responses:
+        '204':
+          description: Календарь отключен
+
+  /calendar/sync:
+    post:
+      tags: [calendar]
+      summary: Запустить ручную синхронизацию
+      responses:
+        '202':
+          description: Синхронизация запущена
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  tasksSynced:
+                    type: integer
+
+# ========== Components ==========
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    projectId:
+      name: projectId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    
+    taskId:
+      name: taskId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+
+  responses:
+    BadRequest:
+      description: Некорректный запрос
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    
+    Unauthorized:
+      description: Не авторизован
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    
+    Forbidden:
+      description: Доступ запрещен
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    
+    NotFound:
+      description: Ресурс не найден
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+  schemas:
+    # ========== Common ==========
+    ErrorResponse:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+        status:
+          type: integer
+        error:
+          type: string
+        message:
+          type: string
+        path:
+          type: string
+        validationErrors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+
+    PageInfo:
+      type: object
+      properties:
+        page:
+          type: integer
+        size:
+          type: integer
+        totalElements:
+          type: integer
+        totalPages:
+          type: integer
+
+    # ========== Auth ==========
+    RegisterRequest:
+      type: object
+      required: [email, password, name]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 8
+        name:
+          type: string
+          minLength: 2
+
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+
+    AuthResponse:
+      type: object
+      properties:
+        accessToken:
+          type: string
+        refreshToken:
+          type: string
+        tokenType:
+          type: string
+          default: Bearer
+        expiresIn:
+          type: integer
+          description: Время жизни access token в секундах
+        user:
+          $ref: '#/components/schemas/User'
+
+    PasswordResetConfirm:
+      type: object
+      required: [token, newPassword]
+      properties:
+        token:
+          type: string
+        newPassword:
+          type: string
+          minLength: 8
+
+    # ========== User ==========
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+        name:
+          type: string
+        avatarUrl:
+          type: string
+          format: uri
+        hourlyRate:
+          type: number
+          format: decimal
+        isAdmin:
+          type: boolean
+        timezone:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+
+    UpdateUserRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        avatarUrl:
+          type: string
+          format: uri
+        hourlyRate:
+          type: number
+          format: decimal
+        timezone:
+          type: string
+
+    UserSettings:
+      type: object
+      properties:
+        notificationPreferences:
+          type: object
+          additionalProperties:
+            type: object
+            properties:
+              inApp:
+                type: boolean
+              email:
+                type: boolean
+              push:
+                type: boolean
+        doNotDisturbUntil:
+          type: string
+          format: date-time
+
+    UserSearchResult:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+        name:
+          type: string
+        avatarUrl:
+          type: string
+
+    # ========== Project ==========
+    ProjectStatus:
+      type: string
+      enum: [ACTIVE, ARCHIVED, COMPLETED]
+
+    ProjectRole:
+      type: string
+      enum: [PROJECT_OWNER, PROJECT_MEMBER, PROJECT_OBSERVER]
+
+    Project:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        ownerId:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+        color:
+          type: string
+          pattern: '^#[0-9A-Fa-f]{6}$'
+        status:
+          $ref: '#/components/schemas/ProjectStatus'
+        hourlyRate:
+          type: number
+          format: decimal
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    ProjectDetails:
+      allOf:
+        - $ref: '#/components/schemas/Project'
+        - type: object
+          properties:
+            owner:
+              $ref: '#/components/schemas/User'
+            members:
+              type: array
+              items:
+                $ref: '#/components/schemas/ProjectMember'
+            taskCounts:
+              type: object
+              properties:
+                total:
+                  type: integer
+                byStatus:
+                  type: object
+                  additionalProperties:
+                    type: integer
+
+    CreateProjectRequest:
+      type: object
+      required: [name, color]
+      properties:
+        name:
+          type: string
+          maxLength: 255
+        description:
+          type: string
+        color:
+          type: string
+          pattern: '^#[0-9A-Fa-f]{6}$'
+        hourlyRate:
+          type: number
+          format: decimal
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+
+    UpdateProjectRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        color:
+          type: string
+        status:
+          $ref: '#/components/schemas/ProjectStatus'
+        hourlyRate:
+          type: number
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+
+    ProjectPage:
+      allOf:
+        - $ref: '#/components/schemas/PageInfo'
+        - type: object
+          properties:
+            content:
+              type: array
+              items:
+                $ref: '#/components/schemas/Project'
+
+    ProjectMember:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        projectId:
+          type: string
+          format: uuid
+        user:
+          $ref: '#/components/schemas/User'
+        role:
+          $ref: '#/components/schemas/ProjectRole'
+        displayOrder:
+          type: integer
+        joinedAt:
+          type: string
+          format: date-time
+
+    AddProjectMemberRequest:
+      type: object
+      required: [userId, role]
+      properties:
+        userId:
+          type: string
+          format: uuid
+        role:
+          $ref: '#/components/schemas/ProjectRole'
+
+    ProjectDashboard:
+      type: object
+      properties:
+        projectId:
+          type: string
+          format: uuid
+        statistics:
+          type: object
+        progress:
+          type: number
+          format: float
+        burndownChart:
+          type: object
+        teamActivity:
+          type: array
+          items:
+            type: object
+        upcomingDeadlines:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaskRef'
+
+    # ========== Task ==========
+    TaskStatus:
+      type: string
+      enum: [NEW, IN_PROGRESS, TESTING, BLOCKED, COMPLETED, CANCELLED]
+
+    TaskPriority:
+      type: string
+      enum: [URGENT, HIGH, MEDIUM, LOW]
+
+    Task:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        projectId:
+          type: string
+          format: uuid
+        parentTaskId:
+          type: string
+          format: uuid
+        title:
+          type: string
+        description:
+          type: string
+        assigneeId:
+          type: string
+          format: uuid
+        createdBy:
+          type: string
+          format: uuid
+        status:
+          $ref: '#/components/schemas/TaskStatus'
+        priority:
+          $ref: '#/components/schemas/TaskPriority'
+        deadline:
+          type: string
+          format: date-time
+        estimatedHours:
+          type: number
+          format: decimal
+        hierarchyLevel:
+          type: integer
+        completedAt:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    TaskDetails:
+      allOf:
+        - $ref: '#/components/schemas/Task'
+        - type: object
+          properties:
+            project:
+              $ref: '#/components/schemas/Project'
+            assignee:
+              $ref: '#/components/schemas/User'
+            creator:
+              $ref: '#/components/schemas/User'
+            tags:
+              type: array
+              items:
+                $ref: '#/components/schemas/Tag'
+            subtasks:
+              type: array
+              items:
+                $ref: '#/components/schemas/Task'
+            files:
+              type: array
+              items:
+                $ref: '#/components/schemas/File'
+            timeEntries:
+              type: array
+              items:
+                $ref: '#/components/schemas/TimeEntry'
+            comments:
+              type: array
+              items:
+                $ref: '#/components/schemas/Comment'
+
+    CreateTaskRequest:
+      type: object
+      required: [projectId, title]
+      properties:
+        projectId:
+          type: string
+          format: uuid
+        parentTaskId:
+          type: string
+          format: uuid
+        title:
+          type: string
+          maxLength: 500
+        description:
+          type: string
+        assigneeId:
+          type: string
+          format: uuid
+        status:
+          $ref: '#/components/schemas/TaskStatus'
+        priority:
+          $ref: '#/components/schemas/TaskPriority'
+        deadline:
+          type: string
+          format: date-time
+        estimatedHours:
+          type: number
+          format: decimal
+        tagIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+
+    UpdateTaskRequest:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        assigneeId:
+          type: string
+          format: uuid
+        status:
+          $ref: '#/components/schemas/TaskStatus'
+        priority:
+          $ref: '#/components/schemas/TaskPriority'
+        deadline:
+          type: string
+          format: date-time
+        estimatedHours:
+          type: number
+        tagIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+
+    TaskPage:
+      allOf:
+        - $ref: '#/components/schemas/PageInfo'
+        - type: object
+          properties:
+            content:
+              type: array
+              items:
+                $ref: '#/components/schemas/Task'
+
+    TaskRef:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        status:
+          $ref: '#/components/schemas/TaskStatus'
+
+    TaskHistoryEntry:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        taskId:
+          type: string
+          format: uuid
+        changedBy:
+          $ref: '#/components/schemas/User'
+        changeType:
+          type: string
+        field:
+          type: string
+        oldValue:
+          type: string
+        newValue:
+          type: string
+        changedAt:
+          type: string
+          format: date-time
+
+    # ========== Time Entry ==========
+    TimeEntryType:
+      type: string
+      enum: [TIMER, MANUAL]
+
+    TimeEntry:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        taskId:
+          type: string
+          format: uuid
+        userId:
+          type: string
+          format: uuid
+        startTime:
+          type: string
+          format: date-time
+        endTime:
+          type: string
+          format: date-time
+        durationSeconds:
+          type: integer
+        hourlyRate:
+          type: number
+          format: decimal
+        cost:
+          type: number
+          format: decimal
+        entryType:
+          $ref: '#/components/schemas/TimeEntryType'
+        description:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    CreateTimeEntryRequest:
+      type: object
+      required: [taskId, startTime]
+      properties:
+        taskId:
+          type: string
+          format: uuid
+        startTime:
+          type: string
+          format: date-time
+        endTime:
+          type: string
+          format: date-time
+        description:
+          type: string
+
+    UpdateTimeEntryRequest:
+      type: object
+      required: [reason]
+      properties:
+        startTime:
+          type: string
+          format: date-time
+        endTime:
+          type: string
+          format: date-time
+        description:
+          type: string
+        reason:
+          type: string
+          description: Причина изменения
+
+    ActiveTimer:
+      allOf:
+        - $ref: '#/components/schemas/TimeEntry'
+        - type: object
+          properties:
+            task:
+              $ref: '#/components/schemas/TaskRef'
+            elapsedSeconds:
+              type: integer
+
+    TimeEntryPage:
+      allOf:
+        - $ref: '#/components/schemas/PageInfo'
+        - type: object
+          properties:
+            content:
+              type: array
+              items:
+                $ref: '#/components/schemas/TimeEntry'
+
+    # ========== Comment ==========
+    Comment:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        taskId:
+          type: string
+          format: uuid
+        user:
+          $ref: '#/components/schemas/User'
+        text:
+          type: string
+        mentionedUsers:
+          type: array
+          items:
+            type: string
+            format: uuid
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    CreateCommentRequest:
+      type: object
+      required: [text]
+      properties:
+        text:
+          type: string
+        mentionedUsers:
+          type: array
+          items:
+            type: string
+            format: uuid
+
+    # ========== Tag ==========
+    Tag:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        color:
+          type: string
+          pattern: '^#[0-9A-Fa-f]{6}$'
+        projectId:
+          type: string
+          format: uuid
+        createdAt:
+          type: string
+          format: date-time
+
+    CreateTagRequest:
+      type: object
+      required: [name, color]
+      properties:
+        name:
+          type: string
+          maxLength: 100
+        color:
+          type: string
+          pattern: '^#[0-9A-Fa-f]{6}$'
+        projectId:
+          type: string
+          format: uuid
+
+    UpdateTagRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        color:
+          type: string
+
+    # ========== File ==========
+    File:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        taskId:
+          type: string
+          format: uuid
+        filename:
+          type: string
+        fileSize:
+          type: integer
+          format: int64
+        mimeType:
+          type: string
+        uploadedBy:
+          type: string
+          format: uuid
+        uploadedAt:
+          type: string
+          format: date-time
+        downloadUrl:
+          type: string
+          format: uri
+
+    # ========== Notification ==========
+    NotificationType:
+      type: string
+      enum:
+        - TASK_ASSIGNED
+        - STATUS_CHANGED
+        - NEW_COMMENT
+        - DEADLINE_APPROACHING
+        - DEADLINE_EXPIRED
+        - MENTIONED
+        - ADDED_TO_PROJECT
+        - PROJECT_UPDATED
+
+    Notification:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        userId:
+          type: string
+          format: uuid
+        type:
+          $ref: '#/components/schemas/NotificationType'
+        title:
+          type: string
+        message:
+          type: string
+        relatedEntityType:
+          type: string
+        relatedEntityId:
+          type: string
+          format: uuid
+        readAt:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+
+    NotificationPage:
+      allOf:
+        - $ref: '#/components/schemas/PageInfo'
+        - type: object
+          properties:
+            content:
+              type: array
+              items:
+                $ref: '#/components/schemas/Notification'
+
+    # ========== Reports ==========
+    ProjectReport:
+      type: object
+      properties:
+        projectId:
+          type: string
+          format: uuid
+        projectName:
+          type: string
+        period:
+          type: object
+          properties:
+            startDate:
+              type: string
+              format: date-time
+            endDate:
+              type: string
+              format: date-time
+        totalHours:
+          type: number
+        totalCost:
+          type: number
+        taskBreakdown:
+          type: array
+          items:
+            type: object
+        userBreakdown:
+          type: array
+          items:
+            type: object
+        charts:
+          type: object
+
+    PersonalReport:
+      type: object
+      properties:
+        userId:
+          type: string
+          format: uuid
+        period:
+          type: object
+        totalHours:
+          type: number
+        completedTasks:
+          type: integer
+        productivityScore:
+          type: number
+        efficiency:
+          type: object
+
+    PersonalDashboard:
+      type: object
+      properties:
+        activeTasks:
+          type: array
+          items:
+            $ref: '#/components/schemas/Task'
+        todaysTasks:
+          type: array
+          items:
+            $ref: '#/components/schemas/Task'
+        activeTimer:
+          $ref: '#/components/schemas/ActiveTimer'
+        hoursChart:
+          type: object
+        upcomingDeadlines:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaskRef'
+        recentNotifications:
+          type: array
+          items:
+            $ref: '#/components/schemas/Notification'
+        projects:
+          type: array
+          items:
+            type: object
+
+    AdminDashboard:
+      type: object
+      properties:
+        systemStats:
+          type: object
+        topUsers:
+          type: array
+          items:
+            type: object
+        topProjects:
+          type: array
+          items:
+            type: object
+        workloadChart:
+          type: object
+        efficiencyMetrics:
+          type: object
+        billingStats:
+          type: object
+        problemAreas:
+          type: array
+          items:
+            type: object
+
+    # ========== Calendar ==========
+    CalendarSettings:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        userId:
+          type: string
+          format: uuid
+        googleCalendarId:
+          type: string
+        syncEnabled:
+          type: boolean
+        syncFilters:
+          type: object
+          properties:
+            priorities:
+              type: array
+              items:
+                $ref: '#/components/schemas/TaskPriority'
+            projectIds:
+              type: array
+              items:
+                type: string
+                format: uuid
+            syncCompletedTasks:
+              type: boolean
+        lastSyncAt:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+
+    UpdateCalendarSettingsRequest:
+      type: object
+      properties:
+        syncEnabled:
+          type: boolean
+        syncFilters:
+          type: object
+
