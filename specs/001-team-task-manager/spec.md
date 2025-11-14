@@ -425,3 +425,15 @@
 - Whiteboard и инструменты для планирования (mind maps, диаграммы Ганта) - не входят в MVP
 - Расширенная геймификация (badges, достижения, награды) - базовая система рейтинга реализована, но без полноценной геймификации
 - SSO интеграция с корпоративными системами (Active Directory, LDAP) - требует уточнения метода аутентификации (FR-007 помечен как NEEDS CLARIFICATION)
+
+---
+
+## Уточнения
+
+### Сессия 2025-11-14
+
+- Q: Какой инструмент сборки использовать для backend проекта? → A: Gradle с Kotlin DSL (build.gradle.kts)
+- Q: Какой паттерн Dependency Injection использовать в Spring компонентах? → A: Constructor Injection с @RequiredArgsConstructor (Lombok)
+- Q: Какая стратегия обработки исключений для REST API? → A: Централизованная с @ControllerAdvice и @ExceptionHandler
+- Q: Какие уровни логирования использовать для приложения? → A: INFO для бизнес-операций, DEBUG для development окружения
+- Q: Какой подход к валидации входных данных использовать? → A: Bean Validation (JSR-380) на всех DTO с @Valid аннотацией

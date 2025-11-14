@@ -44,6 +44,7 @@
 - **Backpressure handling**: Автоматическое управление потоком данных предотвращает перегрузку
 - **Эффективное использование ресурсов**: Реактивный подход использует меньше потоков (event loop model vs thread-per-request)
 - **Естественная интеграция с WebSocket**: Spring WebFlux предоставляет first-class поддержку WebSocket
+- **Constructor Injection**: Все Spring компоненты используют constructor injection через @RequiredArgsConstructor (Lombok) для immutability и улучшенной testability
 
 **R2DBC vs JDBC**:
 - R2DBC обеспечивает неблокирующий доступ к PostgreSQL, сохраняя реактивность всего стека
@@ -420,6 +421,18 @@ GET /api/files/{fileId}
    - **Icon fonts**: PrimeIcons минимизированы
    - **CSS**: Tailwind CSS purge для удаления неиспользуемых классов
 
+**Logging Strategy**:
+- **SLF4J с Logback**: Стандартная конфигурация Spring Boot
+- **Уровни логирования**:
+  - **ERROR**: Исключения и критические ошибки
+  - **WARN**: Предупреждения (retry попытки, deprecated API usage)
+  - **INFO**: Бизнес-операции (создание задачи, старт/стоп таймера, изменение статуса, аутентификация)
+  - **DEBUG**: Детальная информация для development (SQL queries, method входы/выходы, reactive operators)
+- **Production**: INFO уровень по умолчанию, DEBUG для конкретных пакетов при troubleshooting
+- **Development**: DEBUG уровень для com.sprinto.tms, INFO для фреймворков
+- **Structured logging**: JSON формат в production для парсинга ELK/Splunk
+- **Correlation ID**: MDC context для трейсинга запросов через систему
+
 **Monitoring** (для production):
 - Backend: Spring Boot Actuator + Prometheus metrics
 - Frontend: Google Analytics, Sentry для error tracking
@@ -440,9 +453,20 @@ GET /api/files/{fileId}
    - Role-based и permission-based access control
 
 2. **Input validation**:
-   - **Backend**: Bean Validation (JSR-380) для DTO
+   - **Backend**: Bean Validation (JSR-380) для всех DTO
+     - Аннотации: @NotNull, @NotBlank, @Size, @Email, @Min, @Max, @Pattern
+     - @Valid на параметрах контроллеров для автоматической валидации
+     - Custom validators для бизнес-правил (например, @UniqueEmail)
+     - Группы валидации для разных сценариев (Create, Update)
+     - MethodValidationPostProcessor для валидации параметров сервисов
    - **Frontend**: Angular Reactive Forms с validators
    - Sanitization: XSS protection через Content Security Policy
+
+2.1. **Exception Handling**:
+   - **@ControllerAdvice**: Глобальная обработка всех исключений приложения
+   - **@ExceptionHandler**: Методы для каждого типа исключения (ValidationException, NotFoundException, AccessDeniedException и т.д.)
+   - **ErrorResponse DTO**: Унифицированный формат ответа с timestamp, status, error, message, path, validationErrors
+   - **Reactive Exception Handling**: Обработка ошибок в реактивных потоках через onErrorResume/onErrorMap
 
 3. **SQL Injection prevention**:
    - R2DBC parameterized queries (защита by design)

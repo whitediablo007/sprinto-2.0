@@ -135,7 +135,8 @@ backend/
 │       │   └── contract/            # Contract тесты
 │       └── resources/
 │           └── application-test.yml
-├── build.gradle (или pom.xml)
+├── build.gradle.kts          # Gradle Kotlin DSL
+├── settings.gradle.kts
 └── README.md
 
 frontend/
