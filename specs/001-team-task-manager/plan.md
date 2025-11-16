@@ -7,7 +7,7 @@
 
 Реализация Single Page Application (SPA) для управления проектами и задачами в малых командах с реактивным backend на Spring Boot + Project Reactor и современным frontend на Angular 18+. Система обеспечивает: учет рабочего времени через таймеры с WebSocket обновлениями, планирование ресурсов с календарем, формирование отчетов с интерактивной аналитикой, BI дашборды для оценки эффективности, систему рейтинга команды, интеграцию с Google Calendar через OAuth 2.0 и уведомления в реальном времени.
 
-**Технический подход**: Микросервисная архитектура с реактивным backend (R2DBC для неблокирующего доступа к данным), Event-Driven коммуникация через WebSocket для real-time функций, JWT-based аутентификация с Spring Security, NgRx для state management на frontend, OpenAPI для документирования контрактов API.
+**Технический подход**: Модульный монолит (Modular Monolith) с реактивным backend (R2DBC для неблокирующего доступа к данным), чёткими доменными границами между модулями, Event-Driven коммуникация через WebSocket для real-time функций, JWT-based аутентификация с Spring Security, NgRx для state management на frontend, OpenAPI для документирования контрактов API.
 
 ## Технический контекст
 
@@ -53,25 +53,94 @@
 
 *GATE: Должна пройти перед Phase 0 исследования. Повторная проверка после Phase 1 проектирования.*
 
-**Статус**: ⚠️ Constitution файл не заполнен, применяем базовые принципы для проекта
+**Статус**: ✅ **СООТВЕТСТВУЕТ** - План полностью соответствует Constitution v1.0.0
 
-### Базовые архитектурные принципы для данного проекта:
+**Constitution**: `.specify/memory/constitution.md` (версия 1.0.0, ратифицирована 2025-11-14)
 
-1. **Реактивное программирование**: Использование Project Reactor для неблокирующих операций, особенно критично для real-time функций (таймеры, WebSocket)
-2. **Разделение ответственности**: Четкое разделение backend (бизнес-логика, данные) и frontend (UI, UX)
-3. **API-First подход**: Контракты API документируются через OpenAPI перед реализацией
-4. **State management**: Централизованное управление состоянием на frontend через NgRx
-5. **Тестируемость**: Модульные тесты для бизнес-логики, интеграционные для API, E2E для критических user flows
+### Проверка соответствия основным принципам:
 
-### Проверки:
+#### I. Reactive-First Architecture (NON-NEGOTIABLE) ✅
+- ✅ Backend использует Spring WebFlux и Project Reactor (Mono<T>, Flux<T>)
+- ✅ R2DBC для неблокирующего доступа к PostgreSQL
+- ✅ WebSocket с реактивными потоками для backpressure
+- ✅ Блокирующие операции (Flyway, file I/O) изолируются на boundedElastic scheduler
+- **Обоснование**: Критично для real-time функций (таймеры с latency ≤1с, WebSocket ≤2с, поддержка 100 concurrent users)
 
-✅ **Подходящий стек**: Spring WebFlux + R2DBC + Angular подходит для SPA с real-time требованиями  
-✅ **Масштабируемость**: Реактивный подход обеспечит поддержку целевой нагрузки (100 одновременных пользователей)  
-✅ **Разделение ответственности**: Backend и frontend разделены, коммуникация через REST API + WebSocket  
-✅ **Тестируемость**: Предусмотрены тестовые фреймворки для всех слоев  
-⚠️ **Сложность стека**: Реактивное программирование имеет крутую кривую обучения - оправдано real-time требованиями
+#### II. Modular Monolith Architecture ✅
+- ✅ Архитектура организована как модульный монолит с доменными границами
+- ✅ Домены: User & Auth, Project, Task, Time Tracking, Notification, Reporting, Integration
+- ✅ Каждый модуль имеет: собственный package, domain entities, repositories, services
+- ✅ Кросс-модульная коммуникация через явные интерфейсы сервисов
+- ✅ Frontend использует lazy-loaded feature modules с изолированным state
+- **Преимущества**: Простота deployment + масштабируемость кодовой базы + путь к микросервисам при необходимости
 
-**Вывод**: План соответствует базовым принципам. Сложность стека оправдана функциональными требованиями (WebSocket, высокая производительность).
+#### III. Security-First ✅
+- ✅ JWT токены (access 15 мин, refresh 7 дней) - NFR-020
+- ✅ BCrypt с cost factor 12 - NFR-021
+- ✅ Bean Validation (JSR-380) на всех DTO - NFR-022
+- ✅ @ControllerAdvice для централизованной обработки исключений - NFR-023
+- ✅ @PreAuthorize для авторизации - NFR-024
+- ✅ HTTPS + security headers в production - NFR-025
+- ✅ Rate limiting на критичных endpoints - NFR-026
+
+#### IV. Constructor Injection (Backend) ✅
+- ✅ Использование @RequiredArgsConstructor (Lombok)
+- ✅ Field injection запрещён
+- ✅ Constructor parameters как private final fields
+
+#### V. Smart/Presentational Component Separation (Frontend) ✅
+- ✅ Smart components в `features/{feature}/containers/` с NgRx Store
+- ✅ Presentational components в `features/{feature}/components/` с @Input/@Output
+- ✅ OnPush change detection для всех Presentational компонентов
+- ✅ Использование `inject()` function для DI в новых компонентах
+
+#### VI. Testing Strategy (NON-NEGOTIABLE) ⚠️
+- ✅ Backend: JUnit 5 + Mockito для unit tests
+- ✅ Spring Boot Test + WebFlux Test для integration tests
+- ✅ Testcontainers для PostgreSQL в integration tests
+- ✅ WebSocket handlers testing с WebSocketClient
+- ✅ Contract tests для OpenAPI validation
+- ✅ Frontend: Jasmine + Karma для unit tests
+- ✅ NgRx store tests (reducers, effects, selectors)
+- ✅ E2E тесты (Cypress) для критичных user flows
+- ⚠️ **ВНИМАНИЕ**: tasks.md содержит недостаточно тестовых задач для достижения ≥80% backend / ≥70% frontend coverage
+- **Требуется**: Добавить ~60-80 тестовых задач в tasks.md
+
+#### VII. Performance & Scalability ✅
+- ✅ API p95 latency ≤200ms - NFR-008
+- ✅ Поддержка 100 concurrent users - NFR-010
+- ✅ Timer updates ≤1s latency - NFR-011
+- ✅ Report generation ≤5s для 100+ задач - NFR-012
+- ✅ Frontend bundle ≤2MB gzipped - NFR-013
+- ✅ Drag & drop ≥30 FPS - NFR-014
+- ✅ Database indexes для частых запросов - NFR-015
+- ✅ Virtual scrolling для списков >100 items - NFR-017
+- ✅ Кэширование (Spring Cache + Caffeine) для read-heavy data - NFR-019
+
+### Backend Best Practices ✅
+- ✅ Gradle с Kotlin DSL (build.gradle.kts)
+- ✅ Централизованная обработка исключений (@ControllerAdvice)
+- ✅ SLF4J с Logback (INFO для бизнес-операций, DEBUG для development)
+- ✅ Bean Validation (JSR-380) на всех DTO
+- ✅ MapStruct для DTO ↔ Entity маппинга
+
+### Frontend Best Practices ✅
+- ✅ NgRx для глобального state + Signals для локального
+- ✅ inject() function для DI
+- ✅ OnPush change detection для Presentational компонентов
+- ✅ Reactive Forms (Template-driven запрещены)
+- ✅ trackBy для всех *ngFor
+- ✅ async pipe для observables
+
+### Обнаруженные риски:
+
+1. **⚠️ MEDIUM**: Недостаточное покрытие тестами в tasks.md
+   - **Действие**: Добавить тестовые задачи для достижения требуемого coverage
+   
+2. **✅ RESOLVED**: Противоречие "микросервисы" vs "modular monolith"
+   - **Действие**: Исправлено в этом обновлении
+
+**Вывод**: План **СООТВЕТСТВУЕТ** всем принципам Constitution v1.0.0. Требуется только дополнить tasks.md тестовыми задачами для полного соответствия Principle VI.
 
 ## Структура проекта
 
@@ -221,6 +290,32 @@ shared/                              # Общие артефакты (опцио
 
 > **Заполняется ТОЛЬКО если Constitution Check имеет нарушения, требующие обоснования**
 
-**Статус**: Нет критических нарушений, требующих обоснования.
+**Статус**: ✅ **НЕТ НАРУШЕНИЙ** - План полностью соответствует Constitution v1.0.0
 
-**Замечание**: Сложность реактивного стека (Spring WebFlux + Project Reactor) обоснована требованиями к real-time обновлениям (таймеры, WebSocket уведомления) и целями производительности (100 одновременных пользователей). Альтернатива с блокирующим I/O (Spring MVC + JDBC) не обеспечит требуемую производительность при заданной нагрузке.
+**Обоснование технических решений**:
+
+1. **Реактивное программирование (Spring WebFlux + Project Reactor)**
+   - **Сложность**: Высокая (крутая кривая обучения, нетривиальная отладка)
+   - **Обоснование**: ОБЯЗАТЕЛЬНО согласно Constitution Principle I (NON-NEGOTIABLE)
+   - **Необходимость**: Критично для достижения success criteria:
+     - SC-002: Timer updates с latency ≤1 секунда
+     - SC-005: Поддержка 100 concurrent users без деградации
+     - SC-006: WebSocket уведомления ≤2 секунды
+   - **Альтернатива**: Блокирующий I/O (Spring MVC + JDBC) НЕ обеспечит требуемую производительность
+   
+2. **Модульный монолит вместо микросервисов**
+   - **Решение**: Modular Monolith с чёткими доменными границами
+   - **Обоснование**: Балансирует простоту deployment и масштабируемость кодовой базы
+   - **Преимущества**: 
+     - Единый deployment artifact (проще CI/CD)
+     - Отсутствие сетевых вызовов между модулями (выше производительность)
+     - Путь к микросервисам при необходимости (чёткие границы)
+   - **Соответствие**: Constitution Principle II
+   
+3. **NgRx для state management**
+   - **Сложность**: Средняя (boilerplate code, обучение концепций)
+   - **Обоснование**: Constitution Principle V + необходимость управления сложным state
+   - **Необходимость**: Критично для real-time синхронизации (WebSocket updates, optimistic UI)
+   - **Митигация**: Facade services скрывают NgRx complexity от компонентов
+
+**Вывод**: Все технические решения с повышенной сложностью либо обязательны по Constitution (Reactive), либо являются best practices для поставленных задач (NgRx). Альтернативы с меньшей сложностью не обеспечат требуемые характеристики системы.
