@@ -12,8 +12,8 @@
 
 Данный документ содержит детальный список задач для реализации системы управления проектами и задачами. Задачи организованы по пользовательским историям (User Stories) из спецификации и упорядочены по приоритетам P1 → P2 → P3.
 
-**Всего задач**: 380  
-**Приоритет P1**: 183 задач (US1, US2, Extended Features)  
+**Всего задач**: 553  
+**Приоритет P1**: 200 задач (US1, US2, Extended Features, Password Recovery, Audit Trail)  
 **Приоритет P2**: 112 задач (US3, US4, US5)  
 **Приоритет P3**: 85 задач (US6, US7, US8, US9)
 
@@ -109,6 +109,18 @@
 - [ ] T017 [P] Создать UserRepository (R2DBC) в backend/src/main/java/com/sprinto/tms/repository/UserRepository.java
 - [ ] T018 Реализовать AuthService с регистрацией и логином в backend/src/main/java/com/sprinto/tms/service/AuthService.java
 - [ ] T019 Реализовать AuthController (POST /api/auth/register, /api/auth/login, /api/auth/refresh) в backend/src/main/java/com/sprinto/tms/api/rest/AuthController.java
+
+### Password Recovery (FR-007.1)
+
+- [ ] T537 [P] Создать PasswordResetToken entity в backend/src/main/java/com/sprinto/tms/domain/user/PasswordResetToken.java (token, userId, expiresAt)
+- [ ] T538 [P] Создать PasswordResetTokenRepository (R2DBC) в backend/src/main/java/com/sprinto/tms/repository/PasswordResetTokenRepository.java
+- [ ] T539 Реализовать EmailService с SMTP для отправки писем в backend/src/main/java/com/sprinto/tms/service/EmailService.java
+- [ ] T540 Реализовать PasswordResetService (generateToken, validateToken, resetPassword) в backend/src/main/java/com/sprinto/tms/service/PasswordResetService.java
+- [ ] T541 Добавить endpoints в AuthController: POST /api/auth/forgot-password, POST /api/auth/reset-password
+- [ ] T542 [P] Создать ForgotPasswordComponent (Dumb) с email input в frontend/src/app/features/auth/components/forgot-password.component.ts
+- [ ] T543 [P] Создать ResetPasswordComponent (Dumb) с token validation в frontend/src/app/features/auth/components/reset-password.component.ts
+- [ ] T544 Написать integration тест для password reset flow в backend/src/test/java/com/sprinto/tms/integration/PasswordResetFlowTest.java
+
 - [ ] T020 [P] Настроить WebSocket endpoint с STOMP в backend/src/main/java/com/sprinto/tms/config/WebSocketConfig.java
 - [ ] T021 [P] Создать GlobalExceptionHandler с @ControllerAdvice в backend/src/main/java/com/sprinto/tms/exception/GlobalExceptionHandler.java
 - [ ] T022 [P] Настроить Logback для INFO/DEBUG уровней в backend/src/main/resources/logback-spring.xml
@@ -182,6 +194,18 @@
 - [ ] T055 [US1] Реализовать TimeTrackingController (POST /api/time-entries/timer/start, POST /api/time-entries/timer/stop) в backend/src/main/java/com/sprinto/tms/api/rest/TimeTrackingController.java
 - [ ] T056 [US1] Создать WebSocket handler для отправки timer updates на /user/queue/timer в backend/src/main/java/com/sprinto/tms/api/websocket/TimerWebSocketHandler.java
 
+### Time Entry Audit Trail (FR-056-059)
+
+- [ ] T545 [P] Создать TimeEntryAudit entity в backend/src/main/java/com/sprinto/tms/domain/timeentry/TimeEntryAudit.java (auditId, timeEntryId, action, oldValue, newValue, reason, userId, timestamp)
+- [ ] T546 [P] Создать TimeEntryAuditRepository (R2DBC) в backend/src/main/java/com/sprinto/tms/repository/TimeEntryAuditRepository.java
+- [ ] T547 Реализовать AuditTrailService для автоматического логирования изменений TimeEntry в backend/src/main/java/com/sprinto/tms/service/AuditTrailService.java
+- [ ] T548 Интегрировать AuditTrailService в TimeTrackingService (логирование EDIT, DELETE, RESTORE операций)
+- [ ] T549 Добавить endpoint GET /api/time-entries/{id}/audit в TimeTrackingController для получения истории изменений
+- [ ] T550 [P] Создать TimeEntryAuditDTO в backend/src/main/java/com/sprinto/tms/dto/timeentry/TimeEntryAuditDTO.java
+- [ ] T551 [P] Создать TimeEntryAuditListComponent (Dumb) для отображения истории изменений в frontend/src/app/features/time-tracking/components/time-entry-audit-list.component.ts
+- [ ] T552 [P] Создать RestoreTimeEntryDialogComponent (Dumb) для восстановления удалённых записей (ADMIN) в frontend/src/app/features/time-tracking/components/restore-time-entry-dialog.component.ts
+- [ ] T553 Написать integration тест для audit trail в backend/src/test/java/com/sprinto/tms/integration/TimeEntryAuditTest.java
+
 ### Frontend: Models & Store
 
 - [ ] T057 [P] [US1] Создать Task model interface в frontend/src/app/shared/models/task.model.ts
@@ -247,35 +271,35 @@
 
 ### Backend: Domain & Repository
 
-- [ ] T072 [P] [US2] Создать domain entity ProjectMember в backend/src/main/java/com/sprinto/tms/domain/project/ProjectMember.java
-- [ ] T073 [P] [US2] Создать ProjectMemberRepository (R2DBC) в backend/src/main/java/com/sprinto/tms/repository/ProjectMemberRepository.java
+- [ ] T554 [P] [US2] Создать domain entity ProjectMember в backend/src/main/java/com/sprinto/tms/domain/project/ProjectMember.java
+- [ ] T555 [P] [US2] Создать ProjectMemberRepository (R2DBC) в backend/src/main/java/com/sprinto/tms/repository/ProjectMemberRepository.java
 
 ### Backend: DTOs & Services
 
-- [ ] T074 [P] [US2] Создать ProjectCreateDTO, ProjectUpdateDTO, ProjectResponseDTO в backend/src/main/java/com/sprinto/tms/dto/project/
-- [ ] T075 [P] [US2] Создать ProjectMemberDTO, AddMemberRequest в backend/src/main/java/com/sprinto/tms/dto/project/
-- [ ] T076 [P] [US2] Создать ProjectMapper (MapStruct) в backend/src/main/java/com/sprinto/tms/mapper/ProjectMapper.java
-- [ ] T077 [US2] Реализовать ProjectService с методами create, update, addMember, removeMember, getMembers в backend/src/main/java/com/sprinto/tms/service/ProjectService.java
-- [ ] T078 [US2] Реализовать ProjectMemberService для управления ролями в backend/src/main/java/com/sprinto/tms/service/ProjectMemberService.java
+- [ ] T556 [P] [US2] Создать ProjectCreateDTO, ProjectUpdateDTO, ProjectResponseDTO в backend/src/main/java/com/sprinto/tms/dto/project/
+- [ ] T557 [P] [US2] Создать ProjectMemberDTO, AddMemberRequest в backend/src/main/java/com/sprinto/tms/dto/project/
+- [ ] T558 [P] [US2] Создать ProjectMapper (MapStruct) в backend/src/main/java/com/sprinto/tms/mapper/ProjectMapper.java
+- [ ] T559 [US2] Реализовать ProjectService с методами create, update, addMember, removeMember, getMembers в backend/src/main/java/com/sprinto/tms/service/ProjectService.java
+- [ ] T560 [US2] Реализовать ProjectMemberService для управления ролями в backend/src/main/java/com/sprinto/tms/service/ProjectMemberService.java
 
 ### Backend: Controllers
 
-- [ ] T079 [US2] Реализовать ProjectController (POST, GET, PUT, DELETE /api/projects) в backend/src/main/java/com/sprinto/tms/api/rest/ProjectController.java
-- [ ] T080 [US2] Реализовать ProjectMembersController (POST /api/projects/{id}/members, DELETE /api/projects/{id}/members/{userId}) в backend/src/main/java/com/sprinto/tms/api/rest/ProjectMembersController.java
+- [ ] T561 [US2] Реализовать ProjectController (POST, GET, PUT, DELETE /api/projects) в backend/src/main/java/com/sprinto/tms/api/rest/ProjectController.java
+- [ ] T562 [US2] Реализовать ProjectMembersController (POST /api/projects/{id}/members, DELETE /api/projects/{id}/members/{userId}) в backend/src/main/java/com/sprinto/tms/api/rest/ProjectMembersController.java
 
 ### Backend: Security & Authorization
 
-- [ ] T081 [US2] Создать ProjectPermissionEvaluator для проверки прав доступа в backend/src/main/java/com/sprinto/tms/security/ProjectPermissionEvaluator.java
-- [ ] T082 [US2] Добавить @PreAuthorize аннотации в ProjectController с проверкой PROJECT_OWNER роли
+- [ ] T563 [US2] Создать ProjectPermissionEvaluator для проверки прав доступа в backend/src/main/java/com/sprinto/tms/security/ProjectPermissionEvaluator.java
+- [ ] T564 [US2] Добавить @PreAuthorize аннотации в ProjectController с проверкой PROJECT_OWNER роли
 
 ### Backend: WebSocket Events
 
-- [ ] T083 [US2] Создать ProjectEventPublisher для отправки событий на /topic/project.{projectId} в backend/src/main/java/com/sprinto/tms/api/websocket/ProjectEventPublisher.java
-- [ ] T084 [US2] Интегрировать ProjectEventPublisher в ProjectService (события MEMBER_ADDED, MEMBER_REMOVED, PROJECT_UPDATED)
+- [ ] T565 [US2] Создать ProjectEventPublisher для отправки событий на /topic/project.{projectId} в backend/src/main/java/com/sprinto/tms/api/websocket/ProjectEventPublisher.java
+- [ ] T566 [US2] Интегрировать ProjectEventPublisher в ProjectService (события MEMBER_ADDED, MEMBER_REMOVED, PROJECT_UPDATED)
 
 ### Frontend: Models & Store
 
-- [ ] T085 [P] [US2] Создать Project model interface в frontend/src/app/shared/models/project.model.ts
+- [ ] T567 [P] [US2] Создать Project model interface в frontend/src/app/shared/models/project.model.ts
 - [ ] T086 [P] [US2] Создать ProjectMember model interface в frontend/src/app/shared/models/project-member.model.ts
 - [ ] T087 [US2] Создать projects feature store (actions, reducer, effects, selectors) в frontend/src/app/features/projects/store/
 
@@ -1104,25 +1128,29 @@ Phase 1 (Setup) → Phase 2 (Foundational)
 
 ## Резюме
 
-**Всего задач**: 536  
+**Всего задач**: 553  
 **Разбивка по категориям**:
-- Функциональные задачи (implementation): 300
-- Тестовые задачи (unit + integration + contract + E2E): 198
+- Функциональные задачи (implementation): 308
+- Тестовые задачи (unit + integration + contract + E2E): 207
 - Infrastructure & Setup: 38
+
+**Дополнительные функции** (добавлено):
+- Password Recovery flow (FR-007.1): 8 задач (T537-T544)
+- Time Entry Audit Trail (FR-056-059): 9 задач (T545-T553)
 
 **Оценка времени** (rough estimate):
 - Phase 1-2: 2-4 недели (1 разработчик full-time)
-- Phase 3-4 (P1): 5-7 недель (команда 2-3 разработчика)
+- Phase 3-4 (P1): 6-8 недель (команда 2-3 разработчика) - включая Audit Trail
 - Phase 4.5 (Extended Features): 3-4 недели (комментарии, метки, файлы)
 - Phase 5-7 (P2): 5-6 недель
 - Phase 8-11 (P3): 4-5 недель
 - Phase 12 (Polish & Testing): 4-5 недель
 
-**Итого**: ~23-31 неделя для полной реализации всех user stories с полным покрытием тестами
+**Итого**: ~24-32 недели для полной реализации всех user stories с полным покрытием тестами
 
-**MVP (Phase 1-3)**: ~7-11 недель
+**MVP (Phase 1-3)**: ~8-12 недель - включая Password Recovery и Audit Trail
 
-**Extended MVP (Phase 1-4.5)**: ~13-18 недель - включает комментарии, метки и файлы
+**Extended MVP (Phase 1-4.5)**: ~14-19 недель - включает комментарии, метки и файлы
 
 ---
 
