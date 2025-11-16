@@ -61,12 +61,12 @@ API Documentation
 - Use Springdoc OpenAPI (formerly Swagger) for API documentation.
 
 Data Access and ORM
-- Use Spring Data JPA for database operations.
+- Use Spring Data JPA or R2DBC for database operations.
 - Implement proper entity relationships and cascading.
 - Use database migrations with tools like Flyway or Liquibase.
 
 Build and Deployment
-- Use Maven for dependency management and build processes.
+- Use Gradle for dependency management and build processes.
 - Implement proper profiles for different environments (dev, test, prod).
 - Use Docker for containerization if applicable.
 

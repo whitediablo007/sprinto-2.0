@@ -24,6 +24,7 @@
 **Тестирование**:
 - Backend: JUnit 5, Spring Boot Test, Reactor Test (StepVerifier), Testcontainers для интеграционных тестов, WireMock для mock внешних API
 - Frontend: Jasmine, Karma, Cypress для E2E тестирования, NgRx Testing utilities
+ - Product Analytics: событийная продуктовая аналитика для измерения SC-012, SC-013 и SC-014 (по NFR-050–NFR-052)
 
 **Целевая платформа**: Web (SPA), адаптивный дизайн для десктопов, планшетов и мобильных устройств
 
@@ -94,7 +95,7 @@
 - ✅ OnPush change detection для всех Presentational компонентов
 - ✅ Использование `inject()` function для DI в новых компонентах
 
-#### VI. Testing Strategy (NON-NEGOTIABLE) ⚠️
+#### VI. Testing Strategy (NON-NEGOTIABLE) ✅
 - ✅ Backend: JUnit 5 + Mockito для unit tests
 - ✅ Spring Boot Test + WebFlux Test для integration tests
 - ✅ Testcontainers для PostgreSQL в integration tests
@@ -103,8 +104,8 @@
 - ✅ Frontend: Jasmine + Karma для unit tests
 - ✅ NgRx store tests (reducers, effects, selectors)
 - ✅ E2E тесты (Cypress) для критичных user flows
-- ⚠️ **ВНИМАНИЕ**: tasks.md содержит недостаточно тестовых задач для достижения ≥80% backend / ≥70% frontend coverage
-- **Требуется**: Добавить ~60-80 тестовых задач в tasks.md
+- ✅ Нагрузочные и перфоманс-тесты для ключевых критериев SC-002, SC-004, SC-005, SC-006, SC-008, SC-015 (см. задачи Phase 12: Performance & Load Testing)
+ - ✅ CI/CD quality gates: pipeline блокирует merge в main при падении тестов, снижении покрытия ниже NFR-028/NFR-029, наличии linter-ошибок или провале критичных перфоманс-/нагрузочных тестов (NFR-037.2)
 
 #### VII. Performance & Scalability ✅
 - ✅ API p95 latency ≤200ms - NFR-008
@@ -120,7 +121,9 @@
 ### Backend Best Practices ✅
 - ✅ Gradle с Kotlin DSL (build.gradle.kts)
 - ✅ Централизованная обработка исключений (@ControllerAdvice)
+- ✅ Реактивная обработка ошибок в WebFlux-сервисах по единому паттерну (NFR-027): использование onErrorResume/onErrorMap, маппинг доменных исключений в стандартный ErrorResponse и предотвращение обрыва реактивных потоков
 - ✅ SLF4J с Logback (INFO для бизнес-операций, DEBUG для development)
+- ✅ Структурированное JSON-логирование с Correlation ID (MDC) для всех запросов (NFR-038–NFR-044)
 - ✅ Bean Validation (JSR-380) на всех DTO
 - ✅ MapStruct для DTO ↔ Entity маппинга
 
@@ -134,8 +137,8 @@
 
 ### Обнаруженные риски:
 
-1. **⚠️ MEDIUM**: Недостаточное покрытие тестами в tasks.md
-   - **Действие**: Добавить тестовые задачи для достижения требуемого coverage
+1. **⚠️ MEDIUM**: Нагрузочные и перфоманс-тесты могут потребовать дополнительного времени на настройку инструментов и инфраструктуры
+   - **Действие**: Реализовать задачи Performance & Load Testing в Phase 12 и интегрировать их в CI/CD pipeline
    
 2. **✅ RESOLVED**: Противоречие "микросервисы" vs "modular monolith"
    - **Действие**: Исправлено в этом обновлении

@@ -12,10 +12,11 @@
 
 Данный документ содержит детальный список задач для реализации системы управления проектами и задачами. Задачи организованы по пользовательским историям (User Stories) из спецификации и упорядочены по приоритетам P1 → P2 → P3.
 
-**Всего задач**: 553  
-**Приоритет P1**: 200 задач (US1, US2, Extended Features, Password Recovery, Audit Trail)  
-**Приоритет P2**: 112 задач (US3, US4, US5)  
-**Приоритет P3**: 85 задач (US6, US7, US8, US9)
+**Всего задач**: 490  
+**Приоритет P1**: 166 задач (US1, US2, Extended Features, Password Recovery, Audit Trail)  
+**Приоритет P2**: 80 задач (US3, US4, US5)  
+**Приоритет P3**: 87 задач (US6, US7, US8, US9)  
+**Инфраструктурные и cross-cutting задачи (Phase 1, 2, 12 и др.)**: 157 задач
 
 ---
 
@@ -42,14 +43,14 @@
 
 ### Порядок выполнения
 
-1. **Phase 1**: Setup (T001-T006) - Инициализация проектов
-2. **Phase 2**: Foundational (T007-T040) - Базовая инфраструктура + тесты
-3. **Phase 3**: User Story 1 (T041-T085) - Базовое управление задачами (P1) + тесты
-4. **Phase 4**: User Story 2 (T072-T103) - Управление проектами (P1)
-5. **Phase 4.5**: Extended Features (T298-T364) - Комментарии, Метки, Файлы (P1)
-6. **Phase 5-7**: User Stories 3-5 (P2)
-7. **Phase 8-11**: User Stories 6-9 (P3)
-8. **Phase 12**: Polish & Testing (T261-T410) - Cross-cutting + покрытие тестами
+1. **Phase 1**: Setup — инициализация backend/frontend проектов и инфраструктуры БД
+2. **Phase 2**: Foundational — базовая инфраструктура (безопасность, WebSocket, Auth, NgRx, миграции) и тестовый каркас
+3. **Phase 3**: User Story 1 — базовое управление задачами (P1) + таймеры и учёт времени
+4. **Phase 4**: User Story 2 — управление проектами и командой (P1)
+5. **Phase 4.5**: Extended Features — комментарии, метки, файловые вложения (P1)
+6. **Phase 5-7**: User Stories 3-5 (P2) — дашборд, отчёты, система уведомлений
+7. **Phase 8-11**: User Stories 6-9 (P3) — интеграции, BI-аналитика, рейтинг, иерархия задач
+8. **Phase 12**: Polish & Testing — cross-cutting задачи, покрытие тестами, производительность, аналитика, CI/CD
 
 ### Параллельное выполнение
 
@@ -125,6 +126,20 @@
 - [ ] T021 [P] Создать GlobalExceptionHandler с @ControllerAdvice в backend/src/main/java/com/sprinto/tms/exception/GlobalExceptionHandler.java
 - [ ] T022 [P] Настроить Logback для INFO/DEBUG уровней в backend/src/main/resources/logback-spring.xml
 
+### Backend: Reactive Error Handling Pattern (NFR-027)
+
+- [ ] T660 Спроектировать единый паттерн реактивной обработки ошибок для WebFlux-сервисов (onErrorResume/onErrorMap, доменные исключения, маппинг в ErrorResponse) и задокументировать его в разделе Exception Handling backend-архитектуры
+- [ ] T661 [P] Применить паттерн реактивной обработки ошибок в ключевых сервисах (AuthService, TaskService, TimeTrackingService, ProjectService и др.), заменив ad-hoc обработку на стандартизированный подход
+- [ ] T662 [P] Написать unit и integration тесты для проверки реактивного error-handling (корректный маппинг ошибок в ErrorResponse, отсутствие обрыва потоков) в backend/src/test/java/com/sprinto/tms/unit/*.java и integration/*.java
+- [ ] T663 [P] Обновить чеклист code review (requirements.md или аналогичный документ) пунктом о проверке использования onErrorResume/onErrorMap и соблюдении NFR-027/конституции при реализации WebFlux-сервисов
+
+### Backend: Structured Logging & Correlation ID
+
+- [ ] T640 [P] Настроить JSON‑формат логов в Logback для production‑профиля (structured logging) согласно требованиям NFR-038–NFR-043 в backend/src/main/resources/logback-spring.xml
+- [ ] T641 Реализовать WebFlux/WebFilter, генерирующий Correlation ID (если не передан) и записывающий его в MDC для всех входящих HTTP/WebSocket запросов
+- [ ] T642 Обновить GlobalExceptionHandler для логирования ошибок с Correlation ID и возврата его в ответе (заголовок/поле ответа)
+- [ ] T643 [P] Написать integration тест, проверяющий наличие JSON‑логов с Correlation ID для типового REST‑запроса в backend/src/test/java/com/sprinto/tms/integration/StructuredLoggingTest.java
+
 ### Frontend Infrastructure
 
 - [ ] T023 Настроить Angular environment files в frontend/src/environments/ (API URLs, WebSocket URL)
@@ -133,6 +148,8 @@
 - [ ] T026 [P] Настроить NgRx root store в frontend/src/app/store/root-state.ts и root-reducers.ts
 - [ ] T027 [P] Настроить NgRx DevTools в frontend/src/app/app.module.ts
 - [ ] T028 [P] Создать WebSocket service с RxStomp в frontend/src/app/core/services/websocket.service.ts
+- [ ] T629 [P] Реализовать auto-reconnect в WebSocketService с экспоненциальным backoff и ограничением максимальной задержки между попытками
+- [ ] T630 [P] Реализовать повторную подписку на ключевые каналы (/user/queue/timer, /user/queue/notifications и др.) после переподключения и проброс статуса соединения в UI
 - [ ] T029 [P] Создать AuthService с методами login/register/logout в frontend/src/app/core/auth/auth.service.ts
 - [ ] T030 Создать auth feature module со store (actions, reducer, effects, selectors) в frontend/src/app/features/auth/
 - [ ] T031 [P] Настроить Tailwind CSS в frontend/tailwind.config.js и frontend/src/styles/tailwind.css
@@ -205,6 +222,14 @@
 - [ ] T551 [P] Создать TimeEntryAuditListComponent (Dumb) для отображения истории изменений в frontend/src/app/features/time-tracking/components/time-entry-audit-list.component.ts
 - [ ] T552 [P] Создать RestoreTimeEntryDialogComponent (Dumb) для восстановления удалённых записей (ADMIN) в frontend/src/app/features/time-tracking/components/restore-time-entry-dialog.component.ts
 - [ ] T553 Написать integration тест для audit trail в backend/src/test/java/com/sprinto/tms/integration/TimeEntryAuditTest.java
+
+### Timer State Persistence (FR-063, NFR-045, SC-010)
+
+- [ ] T600 [US1] Реализовать сохранение состояния активного таймера на backend (расширение модели TimeEntry или отдельный snapshot-entity) с привязкой к пользователю и задаче
+- [ ] T601 [US1] Добавить REST endpoint или метод в TimeTrackingController для получения текущего активного таймера пользователя при входе в систему
+- [ ] T602 [US1] Обновить TimerFacade и TimerContainerComponent во frontend для запроса состояния таймера при инициализации и показа диалога «продолжить/остановить» при обнаружении активного таймера
+- [ ] T603 [P] [US1] Написать integration тест для сценария восстановления активного таймера (закрытие браузера → повторный вход) в backend/src/test/java/com/sprinto/tms/integration/ActiveTimerPersistenceTest.java
+- [ ] T604 [P] [US1] Написать E2E тест для SC-010 (сохранение/восстановление активного таймера) в frontend/tests/e2e/active-timer-persistence.spec.ts
 
 ### Frontend: Models & Store
 
@@ -481,6 +506,11 @@
 - [ ] T156 [US5] Создать PushNotificationService с Web Push library в backend/src/main/java/com/sprinto/tms/service/PushNotificationService.java
 - [ ] T157 [US5] Создать NotificationRouter для routing по каналам на основе user preferences в backend/src/main/java/com/sprinto/tms/service/NotificationRouter.java
 
+### Backend: Resilience & Graceful Degradation (Notifications)
+
+- [ ] T633 [US5] Добавить обработку ошибок и таймаутов внешнего почтового сервиса в EmailNotificationService с логированием и безопасным отказом, не блокирующим бизнес‑операции
+- [ ] T634 [P] [US5] Написать integration тест для сценариев деградации email‑уведомлений в backend/src/test/java/com/sprinto/tms/integration/EmailNotificationResilienceTest.java
+
 ### Backend: WebSocket Handler
 
 - [ ] T158 [US5] Создать NotificationWebSocketHandler для отправки на /user/queue/notifications в backend/src/main/java/com/sprinto/tms/api/websocket/NotificationWebSocketHandler.java
@@ -566,6 +596,11 @@
 - [ ] T191 [US6] Реализовать CalendarController (GET /api/calendar/settings, PUT /api/calendar/settings, POST /api/calendar/sync) в backend/src/main/java/com/sprinto/tms/api/rest/CalendarController.java
 - [ ] T192 [US6] Создать CalendarEventMapper для Task → Google Calendar Event в backend/src/main/java/com/sprinto/tms/mapper/CalendarEventMapper.java
 - [ ] T193 [US6] Реализовать фильтрацию задач на основе sync_filters в GoogleCalendarService
+
+### Backend: Resilience & Graceful Degradation (Google Calendar)
+
+- [ ] T631 [US6] Реализовать обработку недоступности Google Calendar API (таймауты, коды ошибок) с логированием, безопасным отключением синхронизации и уведомлением пользователя без блокировки основной работы с задачами
+- [ ] T632 [P] [US6] Написать integration тесты для CalendarController/GoogleCalendarService с эмуляцией недоступности внешнего сервиса (5xx/timeout) в backend/src/test/java/com/sprinto/tms/integration/GoogleCalendarResilienceTest.java
 
 ### Frontend: Calendar Store & Services
 
@@ -676,6 +711,12 @@
 - [ ] T230 [P] [US8] Создать ProductivityScoreDTO, TeamRatingDTO в backend/src/main/java/com/sprinto/tms/dto/rating/
 - [ ] T231 [US8] Реализовать RatingController (GET /api/rating/me, GET /api/rating/team) в backend/src/main/java/com/sprinto/tms/api/rest/RatingController.java
 
+### Backend: Privacy & Leaderboard Anonymization
+
+- [ ] T644 [US8] Расширить UserSettings entity и схему хранения (NFR-050, FR-114.1) полями настроек приватности рейтинга (видимость в leaderboard, режим анонимизации, отображаемое имя) в backend/src/main/java/com/sprinto/tms/domain/user/UserSettings.java
+- [ ] T645 [US8] Обновить RatingService/AnalyticsService для применения настроек приватности при формировании командного рейтинга и метрик (скрытие пользователей, анонимизация данных) в backend/src/main/java/com/sprinto/tms/service/RatingService.java
+- [ ] T646 [P] [US8] Написать integration тест, проверяющий соблюдение приватности и анонимизации в RatingController/AnalyticsController (скрытие/обезличивание записей) в backend/src/test/java/com/sprinto/tms/integration/RatingPrivacyTest.java
+
 ### Frontend: Rating Store & Services
 
 - [ ] T232 [US8] Создать rating feature store в frontend/src/app/features/rating/store/
@@ -687,6 +728,12 @@
 - [ ] T235 [P] [US8] Создать ProductivityScoreDisplayComponent (Dumb) в frontend/src/app/features/rating/components/productivity-score-display.component.ts
 - [ ] T236 [P] [US8] Создать TeamComparisonChartComponent (Dumb) в frontend/src/app/features/rating/components/team-comparison-chart.component.ts
 - [ ] T237 [P] [US8] Создать TeamLeaderboardComponent (Dumb) в frontend/src/app/features/rating/components/team-leaderboard.component.ts
+
+### Frontend: Rating Privacy Settings
+
+- [ ] T647 [US8] Создать RatingPrivacySettingsComponent (Dumb) для управления настройками приватности рейтинга (видимость, режим анонимизации, отображаемое имя) в frontend/src/app/features/rating/components/rating-privacy-settings.component.ts
+- [ ] T648 [P] [US8] Обновить RatingContainerComponent и связанные фасады для загрузки/сохранения настроек приватности и передачи их в компоненты рейтинга в frontend/src/app/features/rating/containers/rating-container.component.ts
+- [ ] T649 [P] [US8] Обновить TeamLeaderboardComponent для отображения анонимизированных данных и скрытия пользователей согласно их настройкам приватности; написать unit тесты для проверки этих сценариев в frontend/src/app/features/rating/components/team-leaderboard.component.spec.ts
 
 ### Frontend: Containers
 
@@ -990,6 +1037,23 @@
 - [ ] T409 [P] Написать E2E тест для меток в frontend/tests/e2e/tags.spec.ts
 - [ ] T410 [P] Написать E2E тест для файловых вложений в frontend/tests/e2e/file-attachments.spec.ts
 
+### Performance & Load Testing
+
+- [ ] T635 Настроить инструмент нагрузочного тестирования backend (например, JMeter или Gatling) и базовый сценарий нагрузки для основных REST endpoints
+- [ ] T636 [P] Разработать сценарии нагрузочного тестирования для таймеров и WebSocket‑уведомлений (SC-002, SC-005, SC-006) с измерением задержек и стабильности соединений
+- [ ] T637 [P] Разработать сценарии нагрузочного тестирования генерации отчётов и экспорта (SC-004, SC-008) для типичных объёмов данных
+- [ ] T638 [P] Настроить измерение производительности фронтенда (FPS, время рендеринга drag & drop списков) для проверки SC-015, используя E2E/perf‑инструменты
+- [ ] T639 Интегрировать перфоманс/нагрузочные тесты в CI/CD pipeline с отчётами по ключевым SC‑метрикам
+
+### Product Analytics & Usage Metrics (SC-012–SC-014)
+
+- [ ] T650 Спроектировать таксономию и схему событий продуктовой аналитики (использование отчётности и дашбордов, успешное выполнение P1-сценариев, обращения в поддержку) в соответствии с NFR-050–NFR-052
+- [ ] T651 [P] Реализовать логирование событий использования отчётности и BI-дашбордов на backend (генерация отчётов, просмотр дашбордов, экспорт) с агрегацией по SC-012
+- [ ] T652 [P] Реализовать логирование ключевых событий онбординга и завершения P1-сценариев (US1/US2) на frontend/backend для оценки SC-013
+- [ ] T653 [P] Настроить хранилище/интеграцию для агрегирования метрик SC-012–SC-014 (внутренняя БД или внешняя аналитическая система) и периодическое построение сводных метрик
+- [ ] T654 [P] Создать административный или BI-дашборд для просмотра агрегированных метрик SC-012–SC-014 в frontend/src/app/features/analytics/components/product-analytics-dashboard.component.ts
+- [ ] T655 [P] Написать E2E/интеграционные тесты, проверяющие генерацию ключевых событий аналитики для типичных пользовательских сценариев в frontend/tests/e2e/product-analytics.spec.ts
+
 ### Performance Optimization
 
 - [ ] T268 Реализовать кэширование в backend (Spring Cache + Caffeine) для user permissions, project members
@@ -1025,6 +1089,13 @@
 - [ ] T289 Создать docker-compose.yml для production deployment в корне репозитория
 - [ ] T290 [P] Настроить GitHub Actions / GitLab CI pipeline (.github/workflows/ci.yml или .gitlab-ci.yml)
 - [ ] T291 Настроить environment variables для production в backend/src/main/resources/application-prod.yml
+
+### CI Quality Gates
+
+- [ ] T656 Настроить в CI/CD pipeline обязательные шаги запуска unit, integration, contract и E2E тестов для backend и frontend с прерыванием pipeline при любой ошибке
+- [ ] T657 [P] Настроить проверки порогов code coverage (≥80% backend, ≥70% frontend по NFR-028/NFR-029) в CI/CD pipeline и блокировку merge при снижении покрытия
+- [ ] T658 [P] Интегрировать сценарии Performance & Load Testing (T635–T639) в CI/CD pipeline с блокировкой merge при нарушении критичных перфоманс-метрик (SC-002, SC-004, SC-005, SC-006, SC-008, SC-015)
+- [ ] T659 Обновить документацию по процессу разработки (README/CONTRIBUTING) с описанием quality gates и требований к успешному merge в основную ветку
 
 ### User Experience
 
@@ -1083,15 +1154,15 @@ Phase 1 (Setup) → Phase 2 (Foundational)
 ## Параллельное выполнение: Примеры команд
 
 ### Команда 1 (Backend Focus)
-**Phase 3-4**: T033-T048, T072-T084
-**Phase 5-7**: T104-T108, T127-T133, T152-T164
+**Phase 3-4**: Backend-задачи по US1/US2 (Task/TimeEntry/Project сервисы, репозитории, контроллеры, WebSocket, безопасность)
+**Phase 5-7**: Backend-задачи по дашбордам, отчётам и уведомлениям (Dashboard/Report/Notification сервисы и контроллеры)
 
 ### Команда 2 (Frontend Focus)
-**Phase 3-4**: T049-T071, T085-T103
-**Phase 5-7**: T109-T126, T134-T151, T165-T181
+**Phase 3-4**: Frontend-задачи по US1/US2 (tasks/time-tracking/projects модули, smart/presentational компоненты, NgRx store)
+**Phase 5-7**: Frontend-задачи по дашбордам, отчётам и уведомлениям (dashboard/reports/notifications модули, графики, E2E)
 
 ### Команда 3 (Features P3)
-**Phase 8-11**: US6, US7, US8, US9 - любая последовательность
+**Phase 8-11**: US6–US9 (интеграция с календарём, BI-дашборды, рейтинги, иерархия задач) — любая согласованная последовательность
 
 ---
 
@@ -1128,11 +1199,11 @@ Phase 1 (Setup) → Phase 2 (Foundational)
 
 ## Резюме
 
-**Всего задач**: 553  
-**Разбивка по категориям**:
-- Функциональные задачи (implementation): 308
-- Тестовые задачи (unit + integration + contract + E2E): 207
-- Infrastructure & Setup: 38
+**Всего задач**: 490  
+**Разбивка по категориям (приблизительно)**:
+- Функциональные задачи (implementation)
+- Тестовые задачи (unit + integration + contract + E2E)
+- Infrastructure & Setup / Cross-cutting (инфраструктура, CI/CD, производительность, аналитика и т.п.)
 
 **Дополнительные функции** (добавлено):
 - Password Recovery flow (FR-007.1): 8 задач (T537-T544)
