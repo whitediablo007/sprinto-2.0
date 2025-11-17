@@ -12,11 +12,11 @@
 
 Данный документ содержит детальный список задач для реализации системы управления проектами и задачами. Задачи организованы по пользовательским историям (User Stories) из спецификации и упорядочены по приоритетам P1 → P2 → P3.
 
-**Всего задач**: 490  
-**Приоритет P1**: 166 задач (US1, US2, Extended Features, Password Recovery, Audit Trail)  
+**Всего задач**: 509  
+**Приоритет P1**: 175 задач (US1, US2, Extended Features, Password Recovery, Audit Trail)  
 **Приоритет P2**: 80 задач (US3, US4, US5)  
 **Приоритет P3**: 87 задач (US6, US7, US8, US9)  
-**Инфраструктурные и cross-cutting задачи (Phase 1, 2, 12 и др.)**: 157 задач
+**Инфраструктурные и cross-cutting задачи (Phase 1, 2, 12 и др.)**: 167 задач
 
 ---
 
@@ -121,6 +121,14 @@
 - [ ] T542 [P] Создать ForgotPasswordComponent (Dumb) с email input в frontend/src/app/features/auth/components/forgot-password.component.ts
 - [ ] T543 [P] Создать ResetPasswordComponent (Dumb) с token validation в frontend/src/app/features/auth/components/reset-password.component.ts
 - [ ] T544 Написать integration тест для password reset flow в backend/src/test/java/com/sprinto/tms/integration/PasswordResetFlowTest.java
+
+### Security: Password Policy & Session Inactivity (FR-007.2, FR-007.3, NFR-020, SC-001)
+
+- [ ] T700 [P] Реализовать валидацию сложности пароля на backend (Bean Validation аннотации для полей регистрации/смены пароля согласно FR-007.2) и обновить сообщения об ошибках (см. FR-007.2, NFR-021)
+- [ ] T701 [P] Добавить валидацию сложности пароля и отображение ошибок на формах регистрации/смены пароля на frontend (Reactive Forms + общая карта сообщений валидации) (см. FR-007.2, SC-001)
+- [ ] T702 Задокументировать и реализовать политику истечения пользовательской сессии по неактивности (по умолчанию 30 минут, конфиг через переменные окружения) в механизме access/refresh токенов (см. FR-007.3, NFR-020)
+- [ ] T703 [P] Реализовать на frontend idle‑таймер, который отслеживает активность пользователя (клики/нажатия клавиш/запросы) и инициирует logout при достижении порога неактивности, согласованного с FR-007.3 (см. FR-007.3, SC-001)
+- [ ] T704 Написать integration/E2E тесты, подтверждающие авто‑выход пользователя после периода неактивности и корректную работу повторной аутентификации (см. FR-007.2, FR-007.3, SC-001)
 
 - [ ] T020 [P] Настроить WebSocket endpoint с STOMP в backend/src/main/java/com/sprinto/tms/config/WebSocketConfig.java
 - [ ] T021 [P] Создать GlobalExceptionHandler с @ControllerAdvice в backend/src/main/java/com/sprinto/tms/exception/GlobalExceptionHandler.java
@@ -231,6 +239,12 @@
 - [ ] T603 [P] [US1] Написать integration тест для сценария восстановления активного таймера (закрытие браузера → повторный вход) в backend/src/test/java/com/sprinto/tms/integration/ActiveTimerPersistenceTest.java
 - [ ] T604 [P] [US1] Написать E2E тест для SC-010 (сохранение/восстановление активного таймера) в frontend/tests/e2e/active-timer-persistence.spec.ts
 
+### Time Entry Overlap Conflict Visualization (FR-054, FR-064, SC-016)
+
+- [ ] T714 [US1] Добавить на backend API для получения списка пересекающихся записей времени пользователя для указанного интервала и задачи (FR-054, FR-064, SC-016)
+- [ ] T715 [US1] Реализовать на frontend диалог визуализации конфликта пересечения записей времени (timeline/график) при добавлении/редактировании записи, включая явные варианты подтверждения/отмены (см. FR-054, FR-064, SC-016)
+- [ ] T716 [P] [US1] Написать integration и E2E тесты, проверяющие корректное обнаружение пересечений, отображение предупреждения и поведение при подтверждении/отмене конфликта (см. FR-054, FR-064, SC-016)
+
 ### Frontend: Models & Store
 
 - [ ] T057 [P] [US1] Создать Task model interface в frontend/src/app/shared/models/task.model.ts
@@ -307,10 +321,25 @@
 - [ ] T559 [US2] Реализовать ProjectService с методами create, update, addMember, removeMember, getMembers в backend/src/main/java/com/sprinto/tms/service/ProjectService.java
 - [ ] T560 [US2] Реализовать ProjectMemberService для управления ролями в backend/src/main/java/com/sprinto/tms/service/ProjectMemberService.java
 
+### Backend: Project Archive & Restoration (FR-015–FR-019, NFR-045, NFR-047)
+
+- [ ] T705 [US2] Расширить ProjectService методами archiveProject, restoreProject, deleteProjectHard, обеспечив soft delete/архивацию проектов, остановку активных таймеров и соблюдение бизнес-логики FR-015–FR-019 (см. FR-015, FR-017, FR-018, FR-019, NFR-045)
+- [ ] T706 [US2] Создать @Scheduled‑задачу для периодического удаления проектов, находящихся в архиве более 30 дней, с логированием и учётом NFR-047 по надёжности (см. FR-017, NFR-047)
+
 ### Backend: Controllers
 
 - [ ] T561 [US2] Реализовать ProjectController (POST, GET, PUT, DELETE /api/projects) в backend/src/main/java/com/sprinto/tms/api/rest/ProjectController.java
 - [ ] T562 [US2] Реализовать ProjectMembersController (POST /api/projects/{id}/members, DELETE /api/projects/{id}/members/{userId}) в backend/src/main/java/com/sprinto/tms/api/rest/ProjectMembersController.java
+
+### Frontend: Project Archive UI (FR-015–FR-019)
+
+- [ ] T707 [US2] Добавить в ProjectDetailsContainerComponent и ProjectSettingsContainerComponent действия архивирования/восстановления/окончательного удаления проекта с подтверждающими диалогами и предупреждениями согласно FR-015–FR-019 (см. FR-015, FR-016, FR-017, FR-018)
+- [ ] T708 [US2] Реализовать отображение списка архивных проектов и фильтров по статусам (Активный/Архивный/Завершенный) в ProjectListContainerComponent (см. FR-009, FR-015–FR-018)
+- [ ] T709 [US2] Обновить ProjectsApiService и ProjectsFacade для поддержки новых операций архивации/восстановления и обновления локального состояния (см. FR-015–FR-018)
+
+### Testing: Project Archive Lifecycle (FR-015–FR-019, NFR-045, NFR-047)
+
+- [ ] T710 [US2] Написать integration тесты для полного жизненного цикла проекта (create → archive → restore → hard delete после 30+ дней) в backend/src/test/java/com/sprinto/tms/integration/ProjectArchiveLifecycleTest.java (см. FR-015–FR-019, NFR-045, NFR-047)
 
 ### Backend: Security & Authorization
 
@@ -1065,6 +1094,12 @@
 - [ ] T274 [P] Настроить Tailwind CSS purge для удаления неиспользуемых классов в frontend/tailwind.config.js
 - [ ] T275 Проверить bundle size frontend (<2MB gzipped) и оптимизировать при необходимости
 
+### Change Detection & Long Lists (NFR-013, NFR-017, NFR-018, SC-002, SC-004, SC-008, SC-015)
+
+- [ ] T711 [P] Провести аудит всех Presentational компонентов frontend и убедиться, что для них установлен ChangeDetectionStrategy.OnPush и используются иммутабельные @Input значения (за исключением явно обоснованных случаев) (см. NFR-018)
+- [ ] T712 [P] Добавить линтер/архитектурное правило (ESLint/ts‑rules или custom schematic), предотвращающее использование Default change detection в Presentational компонентах (см. NFR-018)
+- [ ] T713 [P] Применить Angular CDK Virtual Scrolling или эффективную пагинацию ко всем длинным спискам, кроме TaskList (уведомления, отчёты, leaderboard и др.), для выполнения NFR-017 и SC-015 (см. NFR-013, NFR-017, SC-004, SC-008, SC-015)
+
 ### Security & Validation
 
 - [ ] T276 Добавить Bean Validation (@Valid) на всех DTO endpoints в backend controllers
@@ -1096,6 +1131,11 @@
 - [ ] T657 [P] Настроить проверки порогов code coverage (≥80% backend, ≥70% frontend по NFR-028/NFR-029) в CI/CD pipeline и блокировку merge при снижении покрытия
 - [ ] T658 [P] Интегрировать сценарии Performance & Load Testing (T635–T639) в CI/CD pipeline с блокировкой merge при нарушении критичных перфоманс-метрик (SC-002, SC-004, SC-005, SC-006, SC-008, SC-015)
 - [ ] T659 Обновить документацию по процессу разработки (README/CONTRIBUTING) с описанием quality gates и требований к успешному merge в основную ветку
+
+### Constitution Compliance (Constitution §§Core Principles, Testing Strategy, Performance & Scalability)
+
+- [ ] T717 Создать или обновить шаблон Pull Request и CONTRIBUTING.md, добавив явный раздел "Constitution compliance checklist" (Reactive-First, Security-First, Testing Strategy, Performance & Scalability) для авторов PR (см. Constitution §§I, III, VI, VII; NFR-001–NFR-003, NFR-020–NFR-026, NFR-028–NFR-037.2)
+- [ ] T718 [P] Обновить чеклисты code review (requirements.md и другие внутренние документы), включив обязательную проверку соответствия конституции и ключевым NFR при ревью изменений (см. Constitution §Governance, §Testing Strategy, NFR-028–NFR-037.2)
 
 ### User Experience
 
@@ -1171,9 +1211,9 @@ Phase 1 (Setup) → Phase 2 (Foundational)
 ### Статус по фазам
 
 - [ ] Phase 1: Setup (6 задач)
-- [ ] Phase 2: Foundational (34 задач) - добавлено 8 тестовых задач
-- [ ] Phase 3: User Story 1 (53 задач) - добавлено 7 тестовых задач
-- [ ] Phase 4: User Story 2 (32 задач)
+- [ ] Phase 2: Foundational (39 задач) - добавлено 13 тестовых и инфраструктурных задач
+- [ ] Phase 3: User Story 1 (56 задач) - добавлено 10 тестовых и UX задач
+- [ ] Phase 4: User Story 2 (38 задач)
 - [ ] Phase 4.5: Extended Features - Комментарии, Метки, Файлы (67 задач) - НОВАЯ ФАЗА
 - [ ] Phase 5: User Story 3 (23 задачи)
 - [ ] Phase 6: User Story 4 (25 задач)
@@ -1182,7 +1222,7 @@ Phase 1 (Setup) → Phase 2 (Foundational)
 - [ ] Phase 9: User Story 7 (20 задач)
 - [ ] Phase 10: User Story 8 (13 задач)
 - [ ] Phase 11: User Story 9 (21 задача)
-- [ ] Phase 12: Polish & Testing (187 задач) - добавлено 150 тестовых задач
+- [ ] Phase 12: Polish & Testing (192 задач) - добавлено 155 тестовых и кросс-функциональных задач
 
 ### MVP Checkpoint
 

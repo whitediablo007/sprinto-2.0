@@ -25,6 +25,7 @@
 - Backend: JUnit 5, Spring Boot Test, Reactor Test (StepVerifier), Testcontainers для интеграционных тестов, WireMock для mock внешних API
 - Frontend: Jasmine, Karma, Cypress для E2E тестирования, NgRx Testing utilities
  - Product Analytics: событийная продуктовая аналитика для измерения SC-012, SC-013 и SC-014 (по NFR-050–NFR-052)
+ - Тесты на всех уровнях (unit, integration, E2E, contract, performance) ДОЛЖНЫ добавляться по мере реализации функционала; Phase 12 предназначена для добора покрытия, оптимизации и интеграции проверок в CI/CD, а не для переноса тестирования на конец проекта
 
 **Целевая платформа**: Web (SPA), адаптивный дизайн для десктопов, планшетов и мобильных устройств
 
@@ -288,6 +289,13 @@ shared/                              # Общие артефакты (опцио
 ```
 
 **Решение по структуре**: Выбрана структура Web application (Option 2) с разделением на `backend/` и `frontend/`. Backend организован по domain-driven подходу с реактивными репозиториями. Frontend следует Angular best practices с feature modules и NgRx для state management. Flyway миграции обеспечат версионирование схемы БД.
+
+## Термины и соответствие модулей
+
+- **Личный дашборд пользователя** (US3, FR-092–FR-094): реализуется в `frontend/src/app/features/dashboard`  
+- **Операционные отчёты** (US4, FR-086–FR-091): реализуются в `frontend/src/app/features/reports`  
+- **BI/административные дашборды и аналитика** (US7, FR-095–FR-099, NFR-050–NFR-052): реализуются в `frontend/src/app/features/analytics`  
+- **Product Analytics для SC-012–SC-014**: реализуется совместно в `backend` (сбор и агрегация событий) и в `frontend/src/app/features/analytics` (просмотр метрик)
 
 ## Отслеживание сложности
 
