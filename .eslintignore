@@ -1,0 +1,24 @@
+# Dependencies
+node_modules/
+dist/
+build/
+coverage/
+
+# Generated files
+*.min.js
+*.bundle.js
+
+# Config files
+*.config.js
+*.config.ts
+
+# Build tools
+.angular/
+.gradle/
+
+# Test files (if needed)
+# *.spec.ts
+
+# Third party
+vendor/
+

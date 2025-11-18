@@ -1,0 +1,24 @@
+# Dependencies
+node_modules/
+dist/
+build/
+coverage/
+
+# Generated files
+*.min.js
+*.bundle.js
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Build outputs
+.angular/
+.gradle/
+target/
+
+# Logs
+*.log
+
+# Lock files
+*.lock
+

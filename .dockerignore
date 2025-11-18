@@ -1,0 +1,54 @@
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Documentation
+*.md
+docs/
+specs/
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# Build outputs
+node_modules/
+dist/
+build/
+out/
+target/
+.gradle/
+.angular/
+
+# Logs
+*.log
+logs/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Test files
+coverage/
+.nyc_output/
+*.spec.ts
+*.test.ts
+*.test.js
+
+# Temporary
+*.tmp
+*.swp
+.cache/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+Dockerfile*
+docker-compose*.yml
+.dockerignore
+

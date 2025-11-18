@@ -74,12 +74,12 @@
 
 ### Задачи
 
-- [ ] T001 Создать backend проект: Spring Boot с Gradle Kotlin DSL в директории backend/
-- [ ] T002 [P] Создать frontend проект: Angular 18+ с Tailwind CSS в директории frontend/
-- [ ] T003 [P] Настроить Docker Compose с PostgreSQL 15+ в корне репозитория
-- [ ] T004 [P] Настроить EditorConfig и Git hooks для форматирования кода (.editorconfig в корне)
-- [ ] T005 Создать базовую структуру директорий backend согласно plan.md
-- [ ] T006 [P] Создать базовую структуру директорий frontend согласно plan.md (feature modules)
+- [x] T001 Создать backend проект: Spring Boot с Gradle Kotlin DSL в директории backend/
+- [x] T002 [P] Создать frontend проект: Angular 18+ с Tailwind CSS в директории frontend/
+- [x] T003 [P] Настроить Docker Compose с PostgreSQL 15+ в корне репозитория
+- [x] T004 [P] Настроить EditorConfig и Git hooks для форматирования кода (.editorconfig в корне)
+- [x] T005 Создать базовую структуру директорий backend согласно plan.md
+- [x] T006 [P] Создать базовую структуру директорий frontend согласно plan.md (feature modules)
 
 ---
 

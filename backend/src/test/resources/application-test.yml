@@ -1,0 +1,11 @@
+spring:
+  r2dbc:
+    url: r2dbc:postgresql://localhost:5432/tms_db_test
+    username: ${DB_USERNAME:tms_user}
+    password: ${DB_PASSWORD:tms_password}
+
+logging:
+  level:
+    root: WARN
+    ru.get.tms: INFO
+

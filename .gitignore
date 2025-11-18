@@ -1,35 +1,80 @@
-HELP.md
-front-old/
-target/
-logs/
-!.mvn/wrapper/maven-wrapper.jar
-!**/src/main/**/target/
-!**/src/test/**/target/
+# OS Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+*.swp
+*.swo
+*~
 
-### STS ###
-.apt_generated
-.classpath
-.factorypath
-.project
-.settings
-.springBeans
-.sts4-cache
-
-### IntelliJ IDEA ###
-.idea
-*.iws
+# IDE
+.idea/
+.vscode/
 *.iml
 *.ipr
+*.iws
+*.sublime-project
+*.sublime-workspace
 
-### NetBeans ###
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
+# Logs
+*.log
+*.log.*
+logs/
+*.out
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+.env.production
+
+# Build outputs
+dist/
 build/
-!**/src/main/**/build/
-!**/src/test/**/build/
+out/
+target/
+*.class
+*.jar
+*.war
+*.ear
 
-### VS Code ###
-.vscode/
+# Dependencies
+node_modules/
+.gradle/
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Coverage
+coverage/
+.nyc_output/
+*.lcov
+*.coverage
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+
+# Package files
+*.tar.gz
+*.zip
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Application specific
+backend/.gradle/
+backend/build/
+frontend/dist/
+frontend/.angular/
+frontend/node_modules/

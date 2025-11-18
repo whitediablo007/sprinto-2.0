@@ -1,0 +1,32 @@
+#!/bin/sh
+#
+# Pre-commit hook для проверки форматирования кода
+#
+
+# Проверка форматирования backend (Java)
+if [ -d "backend" ]; then
+  echo "Checking backend code formatting..."
+  cd backend
+  ./gradlew spotlessCheck --no-daemon || {
+    echo "Backend code formatting check failed. Run './gradlew spotlessApply' to fix."
+    exit 1
+  }
+  cd ..
+fi
+
+# Проверка форматирования frontend (TypeScript/HTML)
+if [ -d "frontend" ] && [ -d "frontend/node_modules" ]; then
+  echo "Checking frontend code formatting..."
+  cd frontend
+  npm run lint --if-present || {
+    echo "Frontend linting failed. Fix errors before committing."
+    exit 1
+  }
+  cd ..
+elif [ -d "frontend" ]; then
+  echo "Skipping frontend checks - dependencies not installed. Run 'npm install' in frontend directory."
+fi
+
+echo "Pre-commit checks passed!"
+exit 0
+
