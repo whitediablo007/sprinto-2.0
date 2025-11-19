@@ -97,19 +97,19 @@
 
 ### Backend Infrastructure
 
-- [ ] T007 Создать flyway миграцию V1__initial_schema.sql с енумами и таблицей users в backend/src/main/resources/db/migration/
-- [ ] T008 Создать flyway миграцию V2__projects_and_members.sql с таблицами projects, project_members
-- [ ] T009 Создать flyway миграцию V3__tasks_and_dependencies.sql с таблицами tasks, task_dependencies, tags, task_tags
-- [ ] T010 Создать flyway миграцию V4__time_tracking.sql с таблицами time_entries, time_entry_audit
-- [ ] T011 Создать flyway миграцию V5__comments_and_notifications.sql с таблицами comments, notifications, files
-- [ ] T012 Создать flyway миграцию V6__calendar_and_indexes.sql с таблицей calendar_settings и performance индексами
-- [ ] T013 [P] Настроить R2DBC connection pool в backend/src/main/resources/application.yml (PostgreSQL R2DBC driver)
-- [ ] T014 [P] Настроить Spring Security для WebFlux в backend/src/main/java/com/sprinto/tms/config/SecurityConfig.java
-- [ ] T015 Создать JWT utility класс в backend/src/main/java/com/sprinto/tms/security/JwtUtil.java (генерация, валидация токенов)
-- [ ] T016 [P] Создать domain entity User в backend/src/main/java/com/sprinto/tms/domain/user/User.java
-- [ ] T017 [P] Создать UserRepository (R2DBC) в backend/src/main/java/com/sprinto/tms/repository/UserRepository.java
-- [ ] T018 Реализовать AuthService с регистрацией и логином в backend/src/main/java/com/sprinto/tms/service/AuthService.java
-- [ ] T019 Реализовать AuthController (POST /api/auth/register, /api/auth/login, /api/auth/refresh) в backend/src/main/java/com/sprinto/tms/api/rest/AuthController.java
+- [x] T007 Создать flyway миграцию V1__initial_schema.sql с енумами и таблицей users в backend/src/main/resources/db/migration/
+- [x] T008 Создать flyway миграцию V2__projects_and_members.sql с таблицами projects, project_members
+- [x] T009 Создать flyway миграцию V3__tasks_and_dependencies.sql с таблицами tasks, task_dependencies, tags, task_tags
+- [x] T010 Создать flyway миграцию V4__time_tracking.sql с таблицами time_entries, time_entry_audit
+- [x] T011 Создать flyway миграцию V5__comments_and_notifications.sql с таблицами comments, notifications, files
+- [x] T012 Создать flyway миграцию V6__calendar_and_indexes.sql с таблицей calendar_settings и performance индексами
+- [x] T013 [P] Настроить R2DBC connection pool в backend/src/main/resources/application.yml (PostgreSQL R2DBC driver)
+- [x] T014 [P] Настроить Spring Security для WebFlux в backend/src/main/java/ru/get/tms/config/SecurityConfig.java
+- [x] T015 Создать JWT utility класс в backend/src/main/java/ru/get/tms/security/JwtUtil.java (генерация, валидация токенов)
+- [x] T016 [P] Создать domain entity User в backend/src/main/java/ru/get/tms/domain/user/User.java
+- [x] T017 [P] Создать UserRepository (R2DBC) в backend/src/main/java/ru/get/tms/repository/UserRepository.java
+- [x] T018 Реализовать AuthService с регистрацией и логином в backend/src/main/java/ru/get/tms/service/AuthService.java
+- [x] T019 Реализовать AuthController (POST /api/auth/register, /api/auth/login, /api/auth/refresh) в backend/src/main/java/ru/get/tms/api/rest/AuthController.java
 
 ### Password Recovery (FR-007.1)
 
@@ -130,9 +130,9 @@
 - [ ] T703 [P] Реализовать на frontend idle‑таймер, который отслеживает активность пользователя (клики/нажатия клавиш/запросы) и инициирует logout при достижении порога неактивности, согласованного с FR-007.3 (см. FR-007.3, SC-001)
 - [ ] T704 Написать integration/E2E тесты, подтверждающие авто‑выход пользователя после периода неактивности и корректную работу повторной аутентификации (см. FR-007.2, FR-007.3, SC-001)
 
-- [ ] T020 [P] Настроить WebSocket endpoint с STOMP в backend/src/main/java/com/sprinto/tms/config/WebSocketConfig.java
-- [ ] T021 [P] Создать GlobalExceptionHandler с @ControllerAdvice в backend/src/main/java/com/sprinto/tms/exception/GlobalExceptionHandler.java
-- [ ] T022 [P] Настроить Logback для INFO/DEBUG уровней в backend/src/main/resources/logback-spring.xml
+- [x] T020 [P] Настроить WebSocket endpoint с STOMP в backend/src/main/java/ru/get/tms/config/WebSocketConfig.java
+- [x] T021 [P] Создать GlobalExceptionHandler с @ControllerAdvice в backend/src/main/java/ru/get/tms/exception/GlobalExceptionHandler.java
+- [x] T022 [P] Настроить Logback для INFO/DEBUG уровней в backend/src/main/resources/logback-spring.xml
 
 ### Backend: Reactive Error Handling Pattern (NFR-027)
 

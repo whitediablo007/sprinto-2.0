@@ -24,6 +24,8 @@ Thumbs.db
 *.log.*
 logs/
 *.out
+# But keep logs directory structure
+!logs/.gitkeep
 
 # Environment variables
 .env
