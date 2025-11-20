@@ -4,6 +4,11 @@ spring:
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
   
+  flyway:
+    url: ${FLYWAY_URL:${DATABASE_URL}}
+    user: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  
 logging:
   level:
     root: INFO

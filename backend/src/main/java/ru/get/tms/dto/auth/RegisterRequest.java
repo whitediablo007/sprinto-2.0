@@ -2,9 +2,23 @@ package ru.get.tms.dto.auth;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
+/**
+ * DTO for user registration request.
+ *
+ * <p>Password validation per FR-007.2:
+ *
+ * <ul>
+ *   <li>Minimum 8 characters
+ *   <li>At least one digit
+ *   <li>At least one lowercase letter
+ *   <li>At least one uppercase letter
+ *   <li>At least one special character (@#$%^&+=!)
+ * </ul>
+ */
 @Data
 public class RegisterRequest {
 
@@ -13,10 +27,15 @@ public class RegisterRequest {
   private String email;
 
   @NotBlank(message = "Password is required")
-  @Size(min = 8, message = "Password must be at least 8 characters")
+  @Size(min = 8, max = 128, message = "Password must be between 8 and 128 characters")
+  @Pattern(
+      regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!]).*$",
+      message =
+          "Password must contain at least one digit, one lowercase letter, one uppercase letter,"
+              + " and one special character (@#$%^&+=!)")
   private String password;
 
   @NotBlank(message = "Name is required")
-  @Size(min = 2, message = "Name must be at least 2 characters")
+  @Size(min = 2, max = 255, message = "Name must be between 2 and 255 characters")
   private String name;
 }

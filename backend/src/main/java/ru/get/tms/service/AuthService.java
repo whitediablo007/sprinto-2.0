@@ -1,5 +1,7 @@
 package ru.get.tms.service;
 
+import io.r2dbc.postgresql.codec.Json;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -38,7 +40,7 @@ public class AuthService {
                       .passwordHash(passwordEncoder.encode(request.getPassword()))
                       .name(request.getName())
                       .isAdmin(false)
-                      .notificationPreferences("{}")
+                      .notificationPreferences(Json.of("{}".getBytes(StandardCharsets.UTF_8)))
                       .timezone("Europe/Moscow")
                       .createdAt(LocalDateTime.now())
                       .updatedAt(LocalDateTime.now())

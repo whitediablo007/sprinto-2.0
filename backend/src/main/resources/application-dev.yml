@@ -2,8 +2,12 @@ spring:
   r2dbc:
     url: r2dbc:postgresql://localhost:5432/tms_db_dev
   
+  flyway:
+    url: jdbc:postgresql://localhost:5432/tms_db_dev
+  
 logging:
   level:
     ru.get.tms: DEBUG
     org.springframework.web: DEBUG
+    org.flywaydb: DEBUG
 

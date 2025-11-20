@@ -1,5 +1,6 @@
 package ru.get.tms.domain.user;
 
+import io.r2dbc.postgresql.codec.Json;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -40,7 +41,7 @@ public class User {
   private Boolean isAdmin = false;
 
   @Column("notification_preferences")
-  private String notificationPreferences; // JSONB as String, will be parsed
+  private Json notificationPreferences; // JSONB type
 
   @Column("do_not_disturb_until")
   private LocalDateTime doNotDisturbUntil;

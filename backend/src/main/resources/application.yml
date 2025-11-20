@@ -15,6 +15,9 @@ spring:
   
   flyway:
     enabled: true
+    url: jdbc:postgresql://localhost:5432/tms_db
+    user: ${DB_USERNAME:tms_user}
+    password: ${DB_PASSWORD:tms_password}
     locations: classpath:db/migration
     baseline-on-migrate: true
   
@@ -23,12 +26,18 @@ spring:
     port: ${MAIL_PORT:587}
     username: ${MAIL_USERNAME:}
     password: ${MAIL_PASSWORD:}
+    from: ${MAIL_FROM:noreply@sprinto.com}
     properties:
       mail:
         smtp:
           auth: true
           starttls:
             enable: true
+  
+  thymeleaf:
+    cache: false
+    mode: HTML
+    encoding: UTF-8
 
 server:
   port: ${SERVER_PORT:8080}
@@ -51,6 +60,15 @@ springdoc:
 
 jwt:
   secret: ${JWT_SECRET:your-secret-key-change-in-production-min-256-bits}
-  access-token-expiration: ${JWT_ACCESS_EXPIRATION:900000}
+  # Access token expiration: 30 minutes (1800000 ms) - FR-007.3, NFR-020
+  # User session expires after 30 minutes of inactivity
+  access-token-expiration: ${JWT_ACCESS_EXPIRATION:1800000}
+  # Refresh token expiration: 7 days (604800000 ms)
   refresh-token-expiration: ${JWT_REFRESH_EXPIRATION:604800000}
+
+app:
+  frontend:
+    url: ${FRONTEND_URL:http://localhost:4200}
+  password-reset:
+    token-validity-hours: 1
 

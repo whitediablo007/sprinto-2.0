@@ -34,7 +34,7 @@ CREATE INDEX idx_tasks_priority ON tasks(priority);
 CREATE INDEX idx_tasks_deadline ON tasks(deadline);
 CREATE INDEX idx_tasks_project_status ON tasks(project_id, status);
 CREATE INDEX idx_tasks_assignee_status ON tasks(assignee_id, status);
-CREATE INDEX idx_tasks_hierarchy_path ON tasks USING GIN (hierarchy_path);
+CREATE INDEX idx_tasks_hierarchy_path ON tasks(hierarchy_path);
 
 -- Таблица task_dependencies (зависимости задач)
 CREATE TABLE task_dependencies (

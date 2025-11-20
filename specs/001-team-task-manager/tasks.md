@@ -113,22 +113,22 @@
 
 ### Password Recovery (FR-007.1)
 
-- [ ] T537 [P] Создать PasswordResetToken entity в backend/src/main/java/com/sprinto/tms/domain/user/PasswordResetToken.java (token, userId, expiresAt)
-- [ ] T538 [P] Создать PasswordResetTokenRepository (R2DBC) в backend/src/main/java/com/sprinto/tms/repository/PasswordResetTokenRepository.java
-- [ ] T539 Реализовать EmailService с SMTP для отправки писем в backend/src/main/java/com/sprinto/tms/service/EmailService.java
-- [ ] T540 Реализовать PasswordResetService (generateToken, validateToken, resetPassword) в backend/src/main/java/com/sprinto/tms/service/PasswordResetService.java
-- [ ] T541 Добавить endpoints в AuthController: POST /api/auth/forgot-password, POST /api/auth/reset-password
-- [ ] T542 [P] Создать ForgotPasswordComponent (Dumb) с email input в frontend/src/app/features/auth/components/forgot-password.component.ts
-- [ ] T543 [P] Создать ResetPasswordComponent (Dumb) с token validation в frontend/src/app/features/auth/components/reset-password.component.ts
-- [ ] T544 Написать integration тест для password reset flow в backend/src/test/java/com/sprinto/tms/integration/PasswordResetFlowTest.java
+- [x] T537 [P] Создать PasswordResetToken entity в backend/src/main/java/ru/get/tms/domain/user/PasswordResetToken.java (token, userId, expiresAt)
+- [x] T538 [P] Создать PasswordResetTokenRepository (R2DBC) в backend/src/main/java/ru/get/tms/repository/PasswordResetTokenRepository.java
+- [x] T539 Реализовать EmailService с SMTP для отправки писем в backend/src/main/java/ru/get/tms/service/EmailService.java
+- [x] T540 Реализовать PasswordResetService (generateToken, validateToken, resetPassword) в backend/src/main/java/ru/get/tms/service/PasswordResetService.java
+- [x] T541 Добавить endpoints в AuthController: POST /api/auth/password-reset/request, POST /api/auth/password-reset/confirm
+- [x] T542 [P] Создать ForgotPasswordComponent (Dumb) с email input в frontend/src/app/features/auth/components/forgot-password.component.ts
+- [x] T543 [P] Создать ResetPasswordComponent (Dumb) с token validation в frontend/src/app/features/auth/components/reset-password.component.ts
+- [x] T544 Написать integration тест для password reset flow в backend/src/test/java/ru/get/tms/integration/PasswordResetFlowTest.java
 
 ### Security: Password Policy & Session Inactivity (FR-007.2, FR-007.3, NFR-020, SC-001)
 
-- [ ] T700 [P] Реализовать валидацию сложности пароля на backend (Bean Validation аннотации для полей регистрации/смены пароля согласно FR-007.2) и обновить сообщения об ошибках (см. FR-007.2, NFR-021)
-- [ ] T701 [P] Добавить валидацию сложности пароля и отображение ошибок на формах регистрации/смены пароля на frontend (Reactive Forms + общая карта сообщений валидации) (см. FR-007.2, SC-001)
-- [ ] T702 Задокументировать и реализовать политику истечения пользовательской сессии по неактивности (по умолчанию 30 минут, конфиг через переменные окружения) в механизме access/refresh токенов (см. FR-007.3, NFR-020)
-- [ ] T703 [P] Реализовать на frontend idle‑таймер, который отслеживает активность пользователя (клики/нажатия клавиш/запросы) и инициирует logout при достижении порога неактивности, согласованного с FR-007.3 (см. FR-007.3, SC-001)
-- [ ] T704 Написать integration/E2E тесты, подтверждающие авто‑выход пользователя после периода неактивности и корректную работу повторной аутентификации (см. FR-007.2, FR-007.3, SC-001)
+- [x] T700 [P] Реализовать валидацию сложности пароля на backend (Bean Validation аннотации для полей регистрации/смены пароля согласно FR-007.2) и обновить сообщения об ошибках (см. FR-007.2, NFR-021)
+- [x] T701 [P] Добавить валидацию сложности пароля и отображение ошибок на формах регистрации/смены пароля на frontend (Reactive Forms + общая карта сообщений валидации) (см. FR-007.2, SC-001)
+- [x] T702 Задокументировать и реализовать политику истечения пользовательской сессии по неактивности (по умолчанию 30 минут, конфиг через переменные окружения) в механизме access/refresh токенов (см. FR-007.3, NFR-020)
+- [x] T703 [P] Реализовать на frontend idle‑таймер, который отслеживает активность пользователя (клики/нажатия клавиш/запросы) и инициирует logout при достижении порога неактивности, согласованного с FR-007.3 (см. FR-007.3, SC-001)
+- [x] T704 Написать integration/E2E тесты, подтверждающие авто‑выход пользователя после периода неактивности и корректную работу повторной аутентификации (см. FR-007.2, FR-007.3, SC-001)
 
 - [x] T020 [P] Настроить WebSocket endpoint с STOMP в backend/src/main/java/ru/get/tms/config/WebSocketConfig.java
 - [x] T021 [P] Создать GlobalExceptionHandler с @ControllerAdvice в backend/src/main/java/ru/get/tms/exception/GlobalExceptionHandler.java

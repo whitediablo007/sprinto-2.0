@@ -25,9 +25,10 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-data-r2dbc")
     implementation("org.springframework.boot:spring-boot-starter-mail")
+    implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
 
     // Database drivers
-    runtimeOnly("org.postgresql:r2dbc-postgresql")
+    implementation("org.postgresql:r2dbc-postgresql")
     runtimeOnly("org.postgresql:postgresql")
     implementation("org.flywaydb:flyway-core")
     runtimeOnly("org.flywaydb:flyway-database-postgresql")
@@ -82,4 +83,12 @@ spotless {
         endWithNewline()
         indentWithSpaces(4)
     }
+}
+
+flyway {
+    url = System.getenv("FLYWAY_URL") ?: "jdbc:postgresql://localhost:5432/tms_db_dev"
+    user = System.getenv("DB_USERNAME") ?: "tms_user"
+    password = System.getenv("DB_PASSWORD") ?: "tms_password"
+    locations = arrayOf("classpath:db/migration")
+    baselineOnMigrate = true
 }
