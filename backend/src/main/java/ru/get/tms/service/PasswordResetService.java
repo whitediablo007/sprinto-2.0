@@ -10,8 +10,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
 import ru.get.tms.domain.user.PasswordResetToken;
+import ru.get.tms.exception.BusinessLogicException;
 import ru.get.tms.repository.PasswordResetTokenRepository;
 import ru.get.tms.repository.UserRepository;
+import ru.get.tms.util.ReactiveErrorHandler;
 
 /**
  * Service for password reset functionality (FR-007.1).
@@ -113,15 +115,28 @@ public class PasswordResetService {
    * @param token reset token
    * @return Mono&lt;PasswordResetToken&gt; if token is valid
    */
+  /**
+   * Validate password reset token.
+   *
+   * @param token reset token
+   * @return Mono&lt;PasswordResetToken&gt; if token is valid
+   * @throws BusinessLogicException if token is invalid or expired
+   */
   public Mono<PasswordResetToken> validateToken(String token) {
     log.debug("Validating password reset token");
 
     return tokenRepository
         .findValidToken(token, LocalDateTime.now())
         .switchIfEmpty(
-            Mono.error(
-                new IllegalArgumentException(
-                    "Invalid or expired token. Please request a new password reset.")));
+            Mono.defer(
+                () -> {
+                  log.warn("Invalid or expired password reset token");
+                  return Mono.error(
+                      new BusinessLogicException(
+                          "Invalid or expired token. Please request a new password reset.",
+                          "INVALID_RESET_TOKEN"));
+                }))
+        .onErrorResume(ReactiveErrorHandler::handleError);
   }
 
   /**
@@ -140,7 +155,8 @@ public class PasswordResetService {
             resetToken ->
                 userRepository
                     .findById(resetToken.getUserId())
-                    .switchIfEmpty(Mono.error(new IllegalStateException("User not found")))
+                    .switchIfEmpty(
+                        ReactiveErrorHandler.handleNotFound("User", resetToken.getUserId()))
                     .flatMap(
                         user -> {
                           // Update password
@@ -165,7 +181,8 @@ public class PasswordResetService {
                                         .then();
                                   });
                         }))
-        .doOnError(e -> log.error("Failed to reset password", e));
+        .onErrorMap(ReactiveErrorHandler.mapDatabaseError())
+        .onErrorResume(ReactiveErrorHandler::handleError);
   }
 
   /**

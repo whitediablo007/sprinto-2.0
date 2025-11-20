@@ -136,10 +136,10 @@
 
 ### Backend: Reactive Error Handling Pattern (NFR-027)
 
-- [ ] T660 Спроектировать единый паттерн реактивной обработки ошибок для WebFlux-сервисов (onErrorResume/onErrorMap, доменные исключения, маппинг в ErrorResponse) и задокументировать его в разделе Exception Handling backend-архитектуры
-- [ ] T661 [P] Применить паттерн реактивной обработки ошибок в ключевых сервисах (AuthService, TaskService, TimeTrackingService, ProjectService и др.), заменив ad-hoc обработку на стандартизированный подход
-- [ ] T662 [P] Написать unit и integration тесты для проверки реактивного error-handling (корректный маппинг ошибок в ErrorResponse, отсутствие обрыва потоков) в backend/src/test/java/com/sprinto/tms/unit/*.java и integration/*.java
-- [ ] T663 [P] Обновить чеклист code review (requirements.md или аналогичный документ) пунктом о проверке использования onErrorResume/onErrorMap и соблюдении NFR-027/конституции при реализации WebFlux-сервисов
+- [x] T660 Спроектировать единый паттерн реактивной обработки ошибок для WebFlux-сервисов (onErrorResume/onErrorMap, доменные исключения, маппинг в ErrorResponse) и задокументировать его в разделе Exception Handling backend-архитектуры
+- [x] T661 [P] Применить паттерн реактивной обработки ошибок в ключевых сервисах (AuthService, PasswordResetService), заменив ad-hoc обработку на стандартизированный подход
+- [x] T662 [P] Написать unit и integration тесты для проверки реактивного error-handling (корректный маппинг ошибок в ErrorResponse, отсутствие обрыва потоков) в backend/src/test/java/ru/get/tms/unit/ReactiveErrorHandlerTest.java и integration/ReactiveErrorHandlingIntegrationTest.java
+- [x] T663 [P] Обновить чеклист code review пунктом о проверке использования onErrorResume/onErrorMap и соблюдении NFR-027/конституции при реализации WebFlux-сервисов в backend/CODE_REVIEW_CHECKLIST.md
 
 ### Backend: Structured Logging & Correlation ID
 
