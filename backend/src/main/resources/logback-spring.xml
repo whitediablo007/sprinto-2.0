@@ -54,12 +54,35 @@
     </springProfile>
 
     <springProfile name="prod">
-        <!-- Production profile: JSON structured logging -->
+        <!-- Production profile: Structured JSON logging with Correlation ID (NFR-038 to NFR-043) -->
         <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
             <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+                <!-- Include MDC context (for Correlation ID) -->
                 <includeContext>true</includeContext>
-                <includeCallerData>true</includeCallerData>
-                <customFields>{"application":"team-task-manager-backend"}</customFields>
+                <includeMdc>true</includeMdc>
+                <includeMdcKeyName>correlationId</includeMdcKeyName>
+                <includeMdcKeyName>userId</includeMdcKeyName>
+                <includeMdcKeyName>requestMethod</includeMdcKeyName>
+                <includeMdcKeyName>requestPath</includeMdcKeyName>
+                
+                <!-- Include caller data for debugging (can be disabled for performance) -->
+                <includeCallerData>false</includeCallerData>
+                
+                <!-- Custom fields for application metadata -->
+                <customFields>{"application":"team-task-manager-backend","environment":"production"}</customFields>
+                
+                <!-- Structured exception logging -->
+                <throwableConverter class="net.logstash.logback.stacktrace.ShortenedThrowableConverter">
+                    <maxDepthPerThrowable>30</maxDepthPerThrowable>
+                    <maxLength>2048</maxLength>
+                    <shortenedClassNameLength>20</shortenedClassNameLength>
+                    <exclude>sun\.reflect\..*</exclude>
+                    <exclude>net\.sf\.cglib\..*</exclude>
+                    <evaluator class="ch.qos.logback.classic.boolex.OnMarkerEvaluator">
+                        <marker>SECURITY</marker>
+                    </evaluator>
+                    <rootCauseFirst>true</rootCauseFirst>
+                </throwableConverter>
             </encoder>
         </appender>
 
@@ -68,8 +91,19 @@
             <file>${LOG_DIR}/${LOG_FILE}</file>
             <encoder class="net.logstash.logback.encoder.LogstashEncoder">
                 <includeContext>true</includeContext>
-                <includeCallerData>true</includeCallerData>
-                <customFields>{"application":"team-task-manager-backend"}</customFields>
+                <includeMdc>true</includeMdc>
+                <includeMdcKeyName>correlationId</includeMdcKeyName>
+                <includeMdcKeyName>userId</includeMdcKeyName>
+                <includeMdcKeyName>requestMethod</includeMdcKeyName>
+                <includeMdcKeyName>requestPath</includeMdcKeyName>
+                <includeCallerData>false</includeCallerData>
+                <customFields>{"application":"team-task-manager-backend","environment":"production"}</customFields>
+                <throwableConverter class="net.logstash.logback.stacktrace.ShortenedThrowableConverter">
+                    <maxDepthPerThrowable>30</maxDepthPerThrowable>
+                    <maxLength>2048</maxLength>
+                    <shortenedClassNameLength>20</shortenedClassNameLength>
+                    <rootCauseFirst>true</rootCauseFirst>
+                </throwableConverter>
             </encoder>
             <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
                 <fileNamePattern>${LOG_DIR}/${LOG_FILE}.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
@@ -87,8 +121,19 @@
             </filter>
             <encoder class="net.logstash.logback.encoder.LogstashEncoder">
                 <includeContext>true</includeContext>
+                <includeMdc>true</includeMdc>
+                <includeMdcKeyName>correlationId</includeMdcKeyName>
+                <includeMdcKeyName>userId</includeMdcKeyName>
+                <includeMdcKeyName>requestMethod</includeMdcKeyName>
+                <includeMdcKeyName>requestPath</includeMdcKeyName>
                 <includeCallerData>true</includeCallerData>
-                <customFields>{"application":"team-task-manager-backend"}</customFields>
+                <customFields>{"application":"team-task-manager-backend","environment":"production","severity":"error"}</customFields>
+                <throwableConverter class="net.logstash.logback.stacktrace.ShortenedThrowableConverter">
+                    <maxDepthPerThrowable>50</maxDepthPerThrowable>
+                    <maxLength>4096</maxLength>
+                    <shortenedClassNameLength>20</shortenedClassNameLength>
+                    <rootCauseFirst>true</rootCauseFirst>
+                </throwableConverter>
             </encoder>
             <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
                 <fileNamePattern>${LOG_DIR}/application-error.log.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
@@ -105,6 +150,10 @@
         </root>
 
         <logger name="ru.get.tms" level="INFO"/>
+        <!-- Reduce noise from framework loggers -->
+        <logger name="org.springframework" level="WARN"/>
+        <logger name="reactor.netty" level="WARN"/>
+        <logger name="io.netty" level="WARN"/>
     </springProfile>
 </configuration>
 

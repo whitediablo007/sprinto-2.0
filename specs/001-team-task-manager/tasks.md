@@ -143,10 +143,10 @@
 
 ### Backend: Structured Logging & Correlation ID
 
-- [ ] T640 [P] Настроить JSON‑формат логов в Logback для production‑профиля (structured logging) согласно требованиям NFR-038–NFR-043 в backend/src/main/resources/logback-spring.xml
-- [ ] T641 Реализовать WebFlux/WebFilter, генерирующий Correlation ID (если не передан) и записывающий его в MDC для всех входящих HTTP/WebSocket запросов
-- [ ] T642 Обновить GlobalExceptionHandler для логирования ошибок с Correlation ID и возврата его в ответе (заголовок/поле ответа)
-- [ ] T643 [P] Написать integration тест, проверяющий наличие JSON‑логов с Correlation ID для типового REST‑запроса в backend/src/test/java/com/sprinto/tms/integration/StructuredLoggingTest.java
+- [X] T640 [P] Настроить JSON‑формат логов в Logback для production‑профиля (structured logging) согласно требованиям NFR-038–NFR-043 в backend/src/main/resources/logback-spring.xml
+- [X] T641 Реализовать WebFlux/WebFilter, генерирующий Correlation ID (если не передан) и записывающий его в MDC для всех входящих HTTP/WebSocket запросов
+- [X] T642 Обновить GlobalExceptionHandler для логирования ошибок с Correlation ID и возврата его в ответе (заголовок/поле ответа)
+- [X] T643 [P] Написать integration тест, проверяющий наличие JSON‑логов с Correlation ID для типового REST‑запроса в backend/src/test/java/com/sprinto/tms/integration/StructuredLoggingTest.java
 
 ### Frontend Infrastructure
 

@@ -2,6 +2,7 @@ package ru.get.tms.exception;
 
 import java.time.LocalDateTime;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -31,10 +32,15 @@ import reactor.core.publisher.Mono;
  *   <li>Request path
  *   <li>Correlation ID (for tracing)
  * </ul>
+ *
+ * <p>Correlation ID is extracted from Reactor Context and included in both logs and error responses
+ * (NFR-038 to NFR-043).
  */
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+  private static final String CORRELATION_ID_KEY = "correlationId";
 
   /**
    * Handle domain exceptions (business logic errors).
@@ -46,18 +52,30 @@ public class GlobalExceptionHandler {
   @ExceptionHandler(DomainException.class)
   public Mono<ResponseEntity<ErrorResponse>> handleDomainException(
       DomainException ex, ServerWebExchange exchange) {
-    log.warn("Domain exception: {} - {}", ex.getClass().getSimpleName(), ex.getMessage());
+    return Mono.deferContextual(
+        ctx -> {
+          String correlationId = ctx.getOrDefault(CORRELATION_ID_KEY, "N/A").toString();
+          MDC.put(CORRELATION_ID_KEY, correlationId);
 
-    ErrorResponse errorResponse =
-        ErrorResponse.builder()
-            .timestamp(LocalDateTime.now())
-            .status(ex.getHttpStatus().value())
-            .error(ex.getErrorCode())
-            .message(ex.getMessage())
-            .path(exchange.getRequest().getPath().value())
-            .build();
+          log.warn(
+              "Domain exception [correlationId={}]: {} - {}",
+              correlationId,
+              ex.getClass().getSimpleName(),
+              ex.getMessage());
 
-    return Mono.just(ResponseEntity.status(ex.getHttpStatus()).body(errorResponse));
+          ErrorResponse errorResponse =
+              ErrorResponse.builder()
+                  .timestamp(LocalDateTime.now())
+                  .status(ex.getHttpStatus().value())
+                  .error(ex.getErrorCode())
+                  .message(ex.getMessage())
+                  .path(exchange.getRequest().getPath().value())
+                  .correlationId(correlationId)
+                  .build();
+
+          MDC.remove(CORRELATION_ID_KEY);
+          return Mono.just(ResponseEntity.status(ex.getHttpStatus()).body(errorResponse));
+        });
   }
 
   /**
@@ -70,57 +88,84 @@ public class GlobalExceptionHandler {
   @ExceptionHandler(WebExchangeBindException.class)
   public Mono<ResponseEntity<ErrorResponse>> handleValidationException(
       WebExchangeBindException ex, ServerWebExchange exchange) {
-    log.warn("Validation error: {}", ex.getMessage());
+    return Mono.deferContextual(
+        ctx -> {
+          String correlationId = ctx.getOrDefault(CORRELATION_ID_KEY, "N/A").toString();
+          MDC.put(CORRELATION_ID_KEY, correlationId);
 
-    String errorMessage =
-        ex.getBindingResult().getFieldErrors().stream()
-            .map(error -> error.getField() + ": " + error.getDefaultMessage())
-            .reduce((msg1, msg2) -> msg1 + ", " + msg2)
-            .orElse("Validation failed");
+          String errorMessage =
+              ex.getBindingResult().getFieldErrors().stream()
+                  .map(error -> error.getField() + ": " + error.getDefaultMessage())
+                  .reduce((msg1, msg2) -> msg1 + ", " + msg2)
+                  .orElse("Validation failed");
 
-    ErrorResponse errorResponse =
-        ErrorResponse.builder()
-            .timestamp(LocalDateTime.now())
-            .status(HttpStatus.BAD_REQUEST.value())
-            .error("Validation Error")
-            .message(errorMessage)
-            .path(exchange.getRequest().getPath().value())
-            .build();
+          log.warn("Validation error [correlationId={}]: {}", correlationId, errorMessage);
 
-    return Mono.just(ResponseEntity.badRequest().body(errorResponse));
+          ErrorResponse errorResponse =
+              ErrorResponse.builder()
+                  .timestamp(LocalDateTime.now())
+                  .status(HttpStatus.BAD_REQUEST.value())
+                  .error("Validation Error")
+                  .message(errorMessage)
+                  .path(exchange.getRequest().getPath().value())
+                  .correlationId(correlationId)
+                  .build();
+
+          MDC.remove(CORRELATION_ID_KEY);
+          return Mono.just(ResponseEntity.badRequest().body(errorResponse));
+        });
   }
 
   @ExceptionHandler(RuntimeException.class)
   public Mono<ResponseEntity<ErrorResponse>> handleRuntimeException(
       RuntimeException ex, ServerWebExchange exchange) {
-    log.error("Runtime exception: {}", ex.getMessage(), ex);
+    return Mono.deferContextual(
+        ctx -> {
+          String correlationId = ctx.getOrDefault(CORRELATION_ID_KEY, "N/A").toString();
+          MDC.put(CORRELATION_ID_KEY, correlationId);
 
-    ErrorResponse errorResponse =
-        ErrorResponse.builder()
-            .timestamp(LocalDateTime.now())
-            .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
-            .error("Internal Server Error")
-            .message(ex.getMessage())
-            .path(exchange.getRequest().getPath().value())
-            .build();
+          log.error("Runtime exception [correlationId={}]: {}", correlationId, ex.getMessage(), ex);
 
-    return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse));
+          ErrorResponse errorResponse =
+              ErrorResponse.builder()
+                  .timestamp(LocalDateTime.now())
+                  .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                  .error("Internal Server Error")
+                  .message(ex.getMessage())
+                  .path(exchange.getRequest().getPath().value())
+                  .correlationId(correlationId)
+                  .build();
+
+          MDC.remove(CORRELATION_ID_KEY);
+          return Mono.just(
+              ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse));
+        });
   }
 
   @ExceptionHandler(Exception.class)
   public Mono<ResponseEntity<ErrorResponse>> handleException(
       Exception ex, ServerWebExchange exchange) {
-    log.error("Unexpected exception: {}", ex.getMessage(), ex);
+    return Mono.deferContextual(
+        ctx -> {
+          String correlationId = ctx.getOrDefault(CORRELATION_ID_KEY, "N/A").toString();
+          MDC.put(CORRELATION_ID_KEY, correlationId);
 
-    ErrorResponse errorResponse =
-        ErrorResponse.builder()
-            .timestamp(LocalDateTime.now())
-            .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
-            .error("Internal Server Error")
-            .message("An unexpected error occurred")
-            .path(exchange.getRequest().getPath().value())
-            .build();
+          log.error(
+              "Unexpected exception [correlationId={}]: {}", correlationId, ex.getMessage(), ex);
 
-    return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse));
+          ErrorResponse errorResponse =
+              ErrorResponse.builder()
+                  .timestamp(LocalDateTime.now())
+                  .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                  .error("Internal Server Error")
+                  .message("An unexpected error occurred")
+                  .path(exchange.getRequest().getPath().value())
+                  .correlationId(correlationId)
+                  .build();
+
+          MDC.remove(CORRELATION_ID_KEY);
+          return Mono.just(
+              ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse));
+        });
   }
 }
