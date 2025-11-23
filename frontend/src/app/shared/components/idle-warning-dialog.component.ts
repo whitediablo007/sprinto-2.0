@@ -12,11 +12,11 @@ import { IdleTimerService } from '../../core/services/idle-timer.service';
   standalone: true,
   imports: [CommonModule],
   template: `
-    <div class="overlay" *ngIf="show" (click)="onOverlayClick($event)">
-      <div class="dialog" (click)="$event.stopPropagation()">
-        <div class="icon-warning">⏰</div>
-        <h2>Сессия скоро завершится</h2>
-        <p class="message">
+    <div class="overlay" *ngIf="show" role="presentation" (click)="onOverlayClick($event)" (keydown.escape)="onContinue()">
+      <div class="dialog" role="dialog" aria-labelledby="dialog-title" aria-describedby="dialog-description" tabindex="-1" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
+        <div class="icon-warning" aria-hidden="true">⏰</div>
+        <h2 id="dialog-title">Сессия скоро завершится</h2>
+        <p id="dialog-description" class="message">
           Вы неактивны. Сессия автоматически завершится через:
         </p>
         <div class="countdown">{{ formattedTime }}</div>
