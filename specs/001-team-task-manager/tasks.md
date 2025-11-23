@@ -150,18 +150,18 @@
 
 ### Frontend Infrastructure
 
-- [ ] T023 Настроить Angular environment files в frontend/src/environments/ (API URLs, WebSocket URL)
-- [ ] T024 Создать HTTP Interceptor для JWT токенов в frontend/src/app/core/interceptors/auth.interceptor.ts
-- [ ] T025 Создать Auth Guard для защиты маршрутов в frontend/src/app/core/guards/auth.guard.ts
-- [ ] T026 [P] Настроить NgRx root store в frontend/src/app/store/root-state.ts и root-reducers.ts
-- [ ] T027 [P] Настроить NgRx DevTools в frontend/src/app/app.module.ts
-- [ ] T028 [P] Создать WebSocket service с RxStomp в frontend/src/app/core/services/websocket.service.ts
-- [ ] T629 [P] Реализовать auto-reconnect в WebSocketService с экспоненциальным backoff и ограничением максимальной задержки между попытками
-- [ ] T630 [P] Реализовать повторную подписку на ключевые каналы (/user/queue/timer, /user/queue/notifications и др.) после переподключения и проброс статуса соединения в UI
-- [ ] T029 [P] Создать AuthService с методами login/register/logout в frontend/src/app/core/auth/auth.service.ts
-- [ ] T030 Создать auth feature module со store (actions, reducer, effects, selectors) в frontend/src/app/features/auth/
-- [ ] T031 [P] Настроить Tailwind CSS в frontend/tailwind.config.js и frontend/src/styles/tailwind.css
-- [ ] T032 [P] Настроить PrimeNG theme в frontend/src/styles/primeng-theme.scss
+- [X] T023 Настроить Angular environment files в frontend/src/environments/ (API URLs, WebSocket URL)
+- [X] T024 Создать HTTP Interceptor для JWT токенов в frontend/src/app/core/interceptors/auth.interceptor.ts
+- [X] T025 Создать Auth Guard для защиты маршрутов в frontend/src/app/core/guards/auth.guard.ts
+- [X] T026 [P] Настроить NgRx root store в frontend/src/app/store/root-state.ts и root-reducers.ts
+- [X] T027 [P] Настроить NgRx DevTools в frontend/src/app/app.module.ts
+- [X] T028 [P] Создать WebSocket service с RxStomp в frontend/src/app/core/services/websocket.service.ts
+- [X] T629 [P] Реализовать auto-reconnect в WebSocketService с экспоненциальным backoff и ограничением максимальной задержки между попытками
+- [X] T630 [P] Реализовать повторную подписку на ключевые каналы (/user/queue/timer, /user/queue/notifications и др.) после переподключения и проброс статуса соединения в UI
+- [X] T029 [P] Создать AuthService с методами login/register/logout в frontend/src/app/core/auth/auth.service.ts
+- [X] T030 Создать auth feature module со store (actions, reducer, effects, selectors) в frontend/src/app/features/auth/
+- [X] T031 [P] Настроить Tailwind CSS в frontend/tailwind.config.js и frontend/src/styles/tailwind.css
+- [X] T032 [P] Настроить PrimeNG theme в frontend/src/styles/primeng-theme.scss
 
 ### Testing Infrastructure
 

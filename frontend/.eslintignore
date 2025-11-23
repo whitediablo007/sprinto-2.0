@@ -1,0 +1,29 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+build/
+.angular/
+
+# Coverage
+coverage/
+.nyc_output/
+
+# Minified files
+*.min.js
+
+# Third-party
+vendor/
+
+# Test files (optional)
+# *.spec.ts
+# *.test.ts
+
+# Configuration files
+*.config.js
+tailwind.config.js
+
+# Environment files
+src/environments/
+

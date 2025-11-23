@@ -1,3 +1,11 @@
+/* Tailwind CSS */
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+/* PrimeNG Theme */
+@import './styles/primeng-theme.scss';
+
 /* Global Styles */
 * {
   margin: 0;

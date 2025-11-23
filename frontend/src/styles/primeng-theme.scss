@@ -3,3 +3,123 @@
 @import "primeng/resources/primeng.css";
 @import "primeicons/primeicons.css";
 
+// Custom PrimeNG overrides for Team Task Manager
+:root {
+  --primary-color: #0ea5e9;
+  --primary-color-text: #ffffff;
+  --surface-0: #ffffff;
+  --surface-50: #f8fafc;
+  --surface-100: #f1f5f9;
+  --surface-200: #e2e8f0;
+  --surface-300: #cbd5e1;
+  --surface-400: #94a3b8;
+  --surface-500: #64748b;
+  --surface-600: #475569;
+  --surface-700: #334155;
+  --surface-800: #1e293b;
+  --surface-900: #0f172a;
+  --content-padding: 1.25rem;
+  --inline-spacing: 0.5rem;
+  --border-radius: 6px;
+  --surface-ground: #f8fafc;
+  --surface-section: #ffffff;
+  --surface-card: #ffffff;
+  --surface-overlay: #ffffff;
+  --surface-border: #e2e8f0;
+  --surface-hover: #f1f5f9;
+  --focus-ring: 0 0 0 0.2rem #bae6fd;
+  --maskbg: rgba(0, 0, 0, 0.4);
+  --highlight-bg: #e0f2fe;
+  --highlight-text-color: #0c4a6e;
+  --text-color: #334155;
+  --text-color-secondary: #64748b;
+}
+
+// Dark mode support (optional)
+@media (prefers-color-scheme: dark) {
+  :root {
+    --primary-color: #38bdf8;
+    --surface-0: #0f172a;
+    --surface-50: #1e293b;
+    --surface-100: #334155;
+    --surface-200: #475569;
+    --surface-300: #64748b;
+    --surface-400: #94a3b8;
+    --surface-500: #cbd5e1;
+    --surface-600: #e2e8f0;
+    --surface-700: #f1f5f9;
+    --surface-800: #f8fafc;
+    --surface-900: #ffffff;
+    --surface-ground: #0f172a;
+    --surface-section: #1e293b;
+    --surface-card: #1e293b;
+    --surface-overlay: #334155;
+    --surface-border: #334155;
+    --surface-hover: #334155;
+    --focus-ring: 0 0 0 0.2rem #0c4a6e;
+    --highlight-bg: #075985;
+    --highlight-text-color: #bae6fd;
+    --text-color: #f1f5f9;
+    --text-color-secondary: #cbd5e1;
+  }
+}
+
+// Component-specific customizations
+.p-button {
+  font-weight: 500;
+  transition: all 0.2s;
+  
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+.p-card {
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  transition: box-shadow 0.3s;
+  
+  &:hover {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  }
+}
+
+.p-dialog {
+  border-radius: var(--border-radius);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.p-datatable {
+  .p-datatable-thead > tr > th {
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.875rem;
+    letter-spacing: 0.025em;
+  }
+  
+  .p-datatable-tbody > tr {
+    transition: background-color 0.2s;
+    
+    &:hover {
+      background-color: var(--surface-hover) !important;
+    }
+  }
+}
+
+.p-toast {
+  .p-toast-message {
+    border-radius: var(--border-radius);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  }
+}
+
+.p-inputtext {
+  &:enabled:focus {
+    box-shadow: var(--focus-ring);
+  }
+}
+

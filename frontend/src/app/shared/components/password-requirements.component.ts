@@ -54,7 +54,7 @@ import { PasswordRequirements } from '../validators/password.validator';
         [class.unmet]="!requirements.hasSpecialChar && touched"
       >
         <span class="icon">{{ requirements.hasSpecialChar ? '✓' : '○' }}</span>
-        Спецсимвол (@#$%^&+=!)
+        Спецсимвол (&#64;#$%^&+=!)
       </div>
     </div>
   `,
