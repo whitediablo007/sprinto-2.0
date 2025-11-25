@@ -193,25 +193,25 @@
 
 ### Backend: Domain & Repository
 
-- [ ] T041 [P] [US1] Создать domain entity Project в backend/src/main/java/com/sprinto/tms/domain/project/Project.java
-- [ ] T042 [P] [US1] Создать domain entity Task в backend/src/main/java/com/sprinto/tms/domain/task/Task.java
-- [ ] T043 [P] [US1] Создать domain entity TimeEntry в backend/src/main/java/com/sprinto/tms/domain/timeentry/TimeEntry.java
-- [ ] T044 [P] [US1] Создать ProjectRepository (R2DBC) в backend/src/main/java/com/sprinto/tms/repository/ProjectRepository.java
-- [ ] T045 [P] [US1] Создать TaskRepository (R2DBC) в backend/src/main/java/com/sprinto/tms/repository/TaskRepository.java
-- [ ] T046 [P] [US1] Создать TimeEntryRepository (R2DBC) в backend/src/main/java/com/sprinto/tms/repository/TimeEntryRepository.java
+- [x] T041 [P] [US1] Создать domain entity Project в backend/src/main/java/ru/get/tms/domain/project/Project.java
+- [x] T042 [P] [US1] Создать domain entity Task в backend/src/main/java/ru/get/tms/domain/task/Task.java
+- [x] T043 [P] [US1] Создать domain entity TimeEntry в backend/src/main/java/ru/get/tms/domain/timeentry/TimeEntry.java
+- [x] T044 [P] [US1] Создать ProjectRepository (R2DBC) в backend/src/main/java/ru/get/tms/repository/ProjectRepository.java
+- [x] T045 [P] [US1] Создать TaskRepository (R2DBC) в backend/src/main/java/ru/get/tms/repository/TaskRepository.java
+- [x] T046 [P] [US1] Создать TimeEntryRepository (R2DBC) в backend/src/main/java/ru/get/tms/repository/TimeEntryRepository.java
 
 ### Backend: DTOs & Mappers
 
-- [ ] T047 [P] [US1] Создать TaskCreateDTO и TaskResponseDTO в backend/src/main/java/com/sprinto/tms/dto/task/
-- [ ] T048 [P] [US1] Создать TimeEntryDTO и TimerUpdateDTO в backend/src/main/java/com/sprinto/tms/dto/timeentry/
-- [ ] T049 [P] [US1] Создать TaskMapper (MapStruct) в backend/src/main/java/com/sprinto/tms/mapper/TaskMapper.java
-- [ ] T050 [P] [US1] Создать TimeEntryMapper (MapStruct) в backend/src/main/java/com/sprinto/tms/mapper/TimeEntryMapper.java
+- [x] T047 [P] [US1] Создать TaskCreateDTO и TaskResponseDTO в backend/src/main/java/ru/get/tms/dto/task/
+- [x] T048 [P] [US1] Создать TimeEntryDTO и TimerUpdateDTO в backend/src/main/java/ru/get/tms/dto/timeentry/
+- [x] T049 [P] [US1] Создать TaskMapper (MapStruct) в backend/src/main/java/ru/get/tms/mapper/TaskMapper.java
+- [x] T050 [P] [US1] Создать TimeEntryMapper (MapStruct) в backend/src/main/java/ru/get/tms/mapper/TimeEntryMapper.java
 
 ### Backend: Services
 
-- [ ] T051 [US1] Реализовать TaskService с методами create, findById, updateStatus в backend/src/main/java/com/sprinto/tms/service/TaskService.java
-- [ ] T052 [US1] Реализовать TimeTrackingService с методами startTimer, stopTimer, getActiveTimer в backend/src/main/java/com/sprinto/tms/service/TimeTrackingService.java
-- [ ] T053 [US1] Реализовать TimerScheduler для отправки WebSocket обновлений каждую секунду в backend/src/main/java/com/sprinto/tms/service/TimerScheduler.java
+- [x] T051 [US1] Реализовать TaskService с методами create, findById, updateStatus в backend/src/main/java/ru/get/tms/service/TaskService.java
+- [x] T052 [US1] Реализовать TimeTrackingService с методами startTimer, stopTimer, getActiveTimer в backend/src/main/java/ru/get/tms/service/TimeTrackingService.java
+- [x] T053 [US1] Реализовать TimerScheduler для отправки WebSocket обновлений каждую секунду в backend/src/main/java/ru/get/tms/service/TimerScheduler.java
 
 ### Backend: Controllers & WebSocket
 
