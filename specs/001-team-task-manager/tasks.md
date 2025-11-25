@@ -215,9 +215,9 @@
 
 ### Backend: Controllers & WebSocket
 
-- [ ] T054 [US1] Реализовать TaskController (POST /api/tasks, GET /api/tasks/{id}, PUT /api/tasks/{id}/status) в backend/src/main/java/com/sprinto/tms/api/rest/TaskController.java
-- [ ] T055 [US1] Реализовать TimeTrackingController (POST /api/time-entries/timer/start, POST /api/time-entries/timer/stop) в backend/src/main/java/com/sprinto/tms/api/rest/TimeTrackingController.java
-- [ ] T056 [US1] Создать WebSocket handler для отправки timer updates на /user/queue/timer в backend/src/main/java/com/sprinto/tms/api/websocket/TimerWebSocketHandler.java
+- [x] T054 [US1] Реализовать TaskController (POST /api/tasks, GET /api/tasks/{id}, PUT /api/tasks/{id}/status) в backend/src/main/java/ru/get/tms/api/rest/TaskController.java
+- [x] T055 [US1] Реализовать TimeTrackingController (POST /api/time-entries/timer/start, POST /api/time-entries/timer/stop) в backend/src/main/java/ru/get/tms/api/rest/TimeTrackingController.java
+- [x] T056 [US1] Создать WebSocket handler для отправки timer updates на /ws/timer в backend/src/main/java/ru/get/tms/api/websocket/TimerWebSocketHandler.java
 
 ### Time Entry Audit Trail (FR-056-059)
 

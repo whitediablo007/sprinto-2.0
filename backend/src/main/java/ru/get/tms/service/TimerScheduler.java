@@ -10,6 +10,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
+import ru.get.tms.api.websocket.TimerWebSocketHandler;
 import ru.get.tms.domain.project.Project;
 import ru.get.tms.domain.task.Task;
 import ru.get.tms.domain.timeentry.TimeEntry;
@@ -22,14 +23,12 @@ import ru.get.tms.repository.TimeEntryRepository;
  * Scheduler для отправки WebSocket обновлений активных таймеров.
  *
  * <p>Выполняется каждую секунду (fixedDelay = 1000ms). Для каждого активного таймера отправляет
- * обновление состояния через WebSocket.
+ * обновление состояния через WebSocket endpoint /ws/timer.
  *
  * <p>Реализует требования FR-001, FR-002 (real-time обновления таймера с latency ≤1 секунда).
  *
- * <p>Использует реактивный подход для неблокирующей работы. В будущем будет интегрирован с
- * WebSocket handler для отправки через /user/queue/timer.
- *
- * <p>TODO: Интегрировать с WebSocketHandler для отправки TimerUpdateDTO клиентам.
+ * <p>Использует реактивный подход для неблокирующей работы. Интегрирован с {@link
+ * TimerWebSocketHandler} для отправки обновлений подключенным клиентам.
  */
 @Slf4j
 @Service
@@ -39,6 +38,7 @@ public class TimerScheduler {
   private final TimeEntryRepository timeEntryRepository;
   private final TaskRepository taskRepository;
   private final ProjectRepository projectRepository;
+  private final TimerWebSocketHandler timerWebSocketHandler;
 
   /**
    * Обновляет активные таймеры каждую секунду.
@@ -128,20 +128,30 @@ public class TimerScheduler {
   /**
    * Обрабатывает обновление таймера.
    *
-   * <p>В текущей реализации просто логирует. В будущем здесь будет интеграция с WebSocket handler
-   * для отправки обновлений клиентам через /user/queue/timer.
-   *
-   * <p>TODO: Реализовать отправку через WebSocketHandler когда будет создан в T056.
+   * <p>Находит userId для таймера и отправляет обновление через WebSocket endpoint /ws/timer.
    *
    * @param timerUpdate DTO с обновлением таймера
    */
   private void processTimerUpdate(TimerUpdateDTO timerUpdate) {
-    log.trace(
-        "Timer update prepared: timeEntryId={}, elapsedSeconds={}",
-        timerUpdate.getTimeEntryId(),
-        timerUpdate.getElapsedSeconds());
+    // Находим TimeEntry чтобы получить userId
+    timeEntryRepository
+        .findById(timerUpdate.getTimeEntryId())
+        .subscribeOn(Schedulers.boundedElastic())
+        .subscribe(
+            timeEntry -> {
+              // Отправляем обновление через WebSocket
+              timerWebSocketHandler.sendTimerUpdate(timeEntry.getUserId(), timerUpdate);
 
-    // TODO: Интегрировать с WebSocketHandler для отправки клиентам
-    // Пример: webSocketHandler.sendTimerUpdate(timerUpdate);
+              log.trace(
+                  "Timer update sent: userId={}, timeEntryId={}, elapsedSeconds={}",
+                  timeEntry.getUserId(),
+                  timerUpdate.getTimeEntryId(),
+                  timerUpdate.getElapsedSeconds());
+            },
+            error ->
+                log.warn(
+                    "Failed to process timer update for timeEntryId={}: {}",
+                    timerUpdate.getTimeEntryId(),
+                    error.getMessage()));
   }
 }

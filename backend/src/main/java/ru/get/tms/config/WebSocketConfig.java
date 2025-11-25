@@ -19,10 +19,14 @@ public class WebSocketConfig {
 
   /** Maps WebSocket endpoints to their handlers. Add new WebSocket endpoints here as needed. */
   @Bean
-  public HandlerMapping webSocketHandlerMapping(NotificationWebSocketHandler notificationHandler) {
+  public HandlerMapping webSocketHandlerMapping(
+      NotificationWebSocketHandler notificationHandler,
+      ru.get.tms.api.websocket.TimerWebSocketHandler timerHandler) {
     Map<String, WebSocketHandler> map = new HashMap<>();
     // WebSocket endpoint for real-time notifications
     map.put("/ws/notifications", notificationHandler);
+    // WebSocket endpoint for real-time timer updates
+    map.put("/ws/timer", timerHandler);
 
     return new SimpleUrlHandlerMapping(map, 1);
   }
