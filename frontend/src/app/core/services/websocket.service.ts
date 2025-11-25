@@ -39,8 +39,17 @@ export class WebSocketService implements OnDestroy {
   private activeSubscriptions: Map<string, any> = new Map();
 
   constructor() {
-    this.rxStomp = new RxStomp();
-    this.configureRxStomp();
+    // Lazy initialization to avoid errors during app bootstrap
+  }
+
+  /**
+   * Initialize RxStomp if not already initialized.
+   */
+  private ensureInitialized(): void {
+    if (!this.rxStomp) {
+      this.rxStomp = new RxStomp();
+      this.configureRxStomp();
+    }
   }
 
   /**
@@ -52,7 +61,9 @@ export class WebSocketService implements OnDestroy {
       brokerURL: environment.wsUrl,
 
       // Auto-reconnect with exponential backoff (T629)
-      reconnectDelay: this.calculateReconnectDelay.bind(this),
+      reconnectDelay: this.BASE_RECONNECT_DELAY, // Base delay: 1 second
+      maxReconnectDelay: this.MAX_RECONNECT_DELAY, // Max delay: 30 seconds
+      // Note: RxStomp uses exponential backoff by default
 
       // Heartbeat configuration
       heartbeatIncoming: 10000, // Expect heartbeat every 10 seconds
@@ -69,28 +80,46 @@ export class WebSocketService implements OnDestroy {
       }
     };
 
+    if (!this.rxStomp) {
+      return;
+    }
+
     this.rxStomp.configure(stompConfig);
 
-    // Monitor connection state
-    this.rxStomp.connected$.pipe(
-      tap(() => {
-        this.connectionState$.next(ConnectionState.CONNECTED);
-        this.reconnectAttempts = 0;
-        this.resubscribeToChannels(); // T630: Resubscribe after reconnect
-      })
-    ).subscribe();
+    // Monitor connection state - with safety checks and delay
+    setTimeout(() => {
+      if (!this.rxStomp) {
+        return;
+      }
 
-    this.rxStomp.connectionState$.pipe(
-      tap(state => {
-        if (state === 0) { // CLOSED
-          this.connectionState$.next(ConnectionState.DISCONNECTED);
-        } else if (state === 1) { // TRYING
-          this.connectionState$.next(
-            this.reconnectAttempts > 0 ? ConnectionState.RECONNECTING : ConnectionState.CONNECTING
-          );
+      try {
+        if (this.rxStomp.connected$) {
+          this.rxStomp.connected$.pipe(
+            tap(() => {
+              this.connectionState$.next(ConnectionState.CONNECTED);
+              this.reconnectAttempts = 0;
+              this.resubscribeToChannels(); // T630: Resubscribe after reconnect
+            })
+          ).subscribe();
         }
-      })
-    ).subscribe();
+
+        if (this.rxStomp.connectionState$) {
+          this.rxStomp.connectionState$.pipe(
+            tap(state => {
+              if (state === 0) { // CLOSED
+                this.connectionState$.next(ConnectionState.DISCONNECTED);
+              } else if (state === 1) { // TRYING
+                this.connectionState$.next(
+                  this.reconnectAttempts > 0 ? ConnectionState.RECONNECTING : ConnectionState.CONNECTING
+                );
+              }
+            })
+          ).subscribe();
+        }
+      } catch (error) {
+        console.warn('[WebSocket] Error setting up connection monitoring:', error);
+      }
+    }, 0);
   }
 
   /**
@@ -142,10 +171,11 @@ export class WebSocketService implements OnDestroy {
    * Activate WebSocket connection.
    */
   public connect(): void {
-    if (!this.rxStomp.active) {
+    this.ensureInitialized();
+    if (!this.rxStomp!.active) {
       console.log('[WebSocket] Activating connection');
       this.connectionState$.next(ConnectionState.CONNECTING);
-      this.rxStomp.activate();
+      this.rxStomp!.activate();
     }
   }
 
@@ -168,7 +198,8 @@ export class WebSocketService implements OnDestroy {
    * @returns Observable of messages
    */
   public subscribe<T>(destination: string, callback?: (message: T) => void): Observable<T> {
-    const observable = this.rxStomp.watch(destination).pipe(
+    this.ensureInitialized();
+    const observable = this.rxStomp!.watch(destination).pipe(
       map(message => JSON.parse(message.body) as T),
       tap(data => {
         if (callback) {
@@ -201,7 +232,8 @@ export class WebSocketService implements OnDestroy {
    * @param body - Message body (will be JSON stringified)
    */
   public publish(destination: string, body: any): void {
-    this.rxStomp.publish({
+    this.ensureInitialized();
+    this.rxStomp!.publish({
       destination,
       body: JSON.stringify(body)
     });

@@ -13,7 +13,6 @@ import * as AuthActions from '../store/auth.actions';
 import { selectAuthError, selectAuthLoading } from '../store/auth.selectors';
 import { PasswordValidator } from '../../../shared/validators/password.validator';
 import { PasswordRequirementsComponent } from '../../../shared/components/password-requirements.component';
-import { tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-register',
@@ -135,14 +134,12 @@ export class RegisterComponent {
   errorMessage: string | null = null;
 
   constructor() {
-    this.store.select(selectAuthError).pipe(
-      tap(error => {
-        if (error) {
-          this.errorMessage = (error as any)?.error?.message || (typeof error === 'string' ? error : 'Registration failed. Please try again.');
-          this.messages = [{ severity: 'error', summary: 'Error', detail: this.errorMessage || '' }];
-        }
-      })
-    ).subscribe();
+    this.store.select(selectAuthError).subscribe(error => {
+      if (error) {
+        this.errorMessage = (error as any)?.error?.message || (typeof error === 'string' ? error : 'Registration failed. Please try again.');
+        this.messages = [{ severity: 'error', summary: 'Error', detail: this.errorMessage || '' }];
+      }
+    });
   }
 
   onSubmit() {
@@ -156,4 +153,3 @@ export class RegisterComponent {
     }
   }
 }
-

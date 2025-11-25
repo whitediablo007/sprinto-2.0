@@ -11,7 +11,6 @@ import { PasswordModule } from 'primeng/password';
 import { Message } from 'primeng/api';
 import * as AuthActions from '../store/auth.actions';
 import { selectAuthError, selectAuthLoading } from '../store/auth.selectors';
-import { tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-login',
@@ -109,14 +108,12 @@ export class LoginComponent {
   errorMessage: string | null = null;
 
   constructor() {
-    this.store.select(selectAuthError).pipe(
-      tap(error => {
-        if (error) {
-          this.errorMessage = (error as any)?.error?.message || (typeof error === 'string' ? error : 'Login failed. Please try again.');
-          this.messages = [{ severity: 'error', summary: 'Error', detail: this.errorMessage || '' }];
-        }
-      })
-    ).subscribe();
+    this.store.select(selectAuthError).subscribe(error => {
+      if (error) {
+        this.errorMessage = (error as any)?.error?.message || (typeof error === 'string' ? error : 'Login failed. Please try again.');
+        this.messages = [{ severity: 'error', summary: 'Error', detail: this.errorMessage || '' }];
+      }
+    });
   }
 
   onSubmit() {
@@ -130,4 +127,3 @@ export class LoginComponent {
     }
   }
 }
-

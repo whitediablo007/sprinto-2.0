@@ -20,137 +20,150 @@ export class AuthEffects {
   private readonly STORAGE_KEY_REFRESH_TOKEN = 'refresh_token';
   private readonly STORAGE_KEY_USER = 'user';
 
-  constructor(
-    private actions$: Actions,
-    private authService: AuthService,
-    private router: Router
-  ) {}
-
   /**
    * Login effect.
    */
-  login$ = createEffect(() =>
-    this.actions$.pipe(
-      ofType(AuthActions.login),
-      switchMap(({ credentials }) =>
-        this.authService.login(credentials).pipe(
-          map(response => AuthActions.loginSuccess({ response })),
-          catchError(error => of(AuthActions.loginFailure({ 
-            error: error.error?.message || 'Login failed' 
-          })))
-        )
-      )
-    )
-  );
+  login$;
 
   /**
    * Register effect.
    */
-  register$ = createEffect(() =>
-    this.actions$.pipe(
-      ofType(AuthActions.register),
-      switchMap(({ userData }) =>
-        this.authService.register(userData).pipe(
-          map(response => AuthActions.registerSuccess({ response })),
-          catchError(error => of(AuthActions.registerFailure({ 
-            error: error.error?.message || 'Registration failed' 
-          })))
-        )
-      )
-    )
-  );
+  register$;
 
   /**
    * Refresh token effect.
    */
-  refreshToken$ = createEffect(() =>
-    this.actions$.pipe(
-      ofType(AuthActions.refreshToken),
-      switchMap(({ refreshToken }) =>
-        this.authService.refreshToken(refreshToken).pipe(
-          map(response => AuthActions.refreshTokenSuccess({ response })),
-          catchError(error => of(AuthActions.refreshTokenFailure({ 
-            error: error.error?.message || 'Token refresh failed' 
-          })))
-        )
-      )
-    )
-  );
+  refreshToken$;
 
   /**
    * Store tokens and user in localStorage after successful login/register.
    */
-  storeAuthData$ = createEffect(
-    () =>
-      this.actions$.pipe(
-        ofType(
-          AuthActions.loginSuccess,
-          AuthActions.registerSuccess,
-          AuthActions.refreshTokenSuccess
-        ),
-        tap(({ response }) => {
-          localStorage.setItem(this.STORAGE_KEY_ACCESS_TOKEN, response.accessToken);
-          localStorage.setItem(this.STORAGE_KEY_REFRESH_TOKEN, response.refreshToken);
-          localStorage.setItem(this.STORAGE_KEY_USER, JSON.stringify(response.user));
-        })
-      ),
-    { dispatch: false }
-  );
+  storeAuthData$;
 
   /**
    * Navigate to dashboard after successful login/register.
    */
-  navigateToDashboard$ = createEffect(
-    () =>
-      this.actions$.pipe(
-        ofType(AuthActions.loginSuccess, AuthActions.registerSuccess),
-        tap(() => {
-          this.router.navigate(['/dashboard']);
-        })
-      ),
-    { dispatch: false }
-  );
+  navigateToDashboard$;
 
   /**
    * Clear localStorage and navigate to login on logout.
    */
-  logout$ = createEffect(
-    () =>
-      this.actions$.pipe(
-        ofType(AuthActions.logout),
-        tap(() => {
-          localStorage.removeItem(this.STORAGE_KEY_ACCESS_TOKEN);
-          localStorage.removeItem(this.STORAGE_KEY_REFRESH_TOKEN);
-          localStorage.removeItem(this.STORAGE_KEY_USER);
-          this.router.navigate(['/auth/login']);
-        })
-      ),
-    { dispatch: false }
-  );
+  logout$;
 
   /**
    * Load user data from localStorage on app init.
    */
-  loadUserFromStorage$ = createEffect(() =>
-    this.actions$.pipe(
-      ofType(AuthActions.loadUserFromStorage),
-      map(() => {
-        const accessToken = localStorage.getItem(this.STORAGE_KEY_ACCESS_TOKEN);
-        const refreshToken = localStorage.getItem(this.STORAGE_KEY_REFRESH_TOKEN);
-        const userJson = localStorage.getItem(this.STORAGE_KEY_USER);
+  loadUserFromStorage$;
 
-        if (accessToken && refreshToken && userJson) {
-          const user = JSON.parse(userJson);
-          return AuthActions.loadUserFromStorageSuccess({
-            accessToken,
-            refreshToken,
-            user
-          });
-        }
+  constructor(
+    private actions$: Actions,
+    private authService: AuthService,
+    private router: Router
+  ) {
+    this.login$ = createEffect(() =>
+      this.actions$.pipe(
+        ofType(AuthActions.login),
+        switchMap(({ credentials }) =>
+          this.authService.login(credentials).pipe(
+            map(response => AuthActions.loginSuccess({ response })),
+            catchError(error => of(AuthActions.loginFailure({ 
+              error: error.error?.message || 'Login failed' 
+            })))
+          )
+        )
+      )
+    );
 
-        return AuthActions.loadUserFromStorageFailure();
-      })
-    )
-  );
+    this.register$ = createEffect(() =>
+      this.actions$.pipe(
+        ofType(AuthActions.register),
+        switchMap(({ userData }) =>
+          this.authService.register(userData).pipe(
+            map(response => AuthActions.registerSuccess({ response })),
+            catchError(error => of(AuthActions.registerFailure({ 
+              error: error.error?.message || 'Registration failed' 
+            })))
+          )
+        )
+      )
+    );
+
+    this.refreshToken$ = createEffect(() =>
+      this.actions$.pipe(
+        ofType(AuthActions.refreshToken),
+        switchMap(({ refreshToken }) =>
+          this.authService.refreshToken(refreshToken).pipe(
+            map(response => AuthActions.refreshTokenSuccess({ response })),
+            catchError(error => of(AuthActions.refreshTokenFailure({ 
+              error: error.error?.message || 'Token refresh failed' 
+            })))
+          )
+        )
+      )
+    );
+
+    this.storeAuthData$ = createEffect(
+      () =>
+        this.actions$.pipe(
+          ofType(
+            AuthActions.loginSuccess,
+            AuthActions.registerSuccess,
+            AuthActions.refreshTokenSuccess
+          ),
+          tap(({ response }) => {
+            localStorage.setItem(this.STORAGE_KEY_ACCESS_TOKEN, response.accessToken);
+            localStorage.setItem(this.STORAGE_KEY_REFRESH_TOKEN, response.refreshToken);
+            localStorage.setItem(this.STORAGE_KEY_USER, JSON.stringify(response.user));
+          })
+        ),
+      { dispatch: false }
+    );
+
+    this.navigateToDashboard$ = createEffect(
+      () =>
+        this.actions$.pipe(
+          ofType(AuthActions.loginSuccess, AuthActions.registerSuccess),
+          tap(() => {
+            this.router.navigate(['/dashboard']);
+          })
+        ),
+      { dispatch: false }
+    );
+
+    this.logout$ = createEffect(
+      () =>
+        this.actions$.pipe(
+          ofType(AuthActions.logout),
+          tap(() => {
+            localStorage.removeItem(this.STORAGE_KEY_ACCESS_TOKEN);
+            localStorage.removeItem(this.STORAGE_KEY_REFRESH_TOKEN);
+            localStorage.removeItem(this.STORAGE_KEY_USER);
+            this.router.navigate(['/auth/login']);
+          })
+        ),
+      { dispatch: false }
+    );
+
+    this.loadUserFromStorage$ = createEffect(() =>
+      this.actions$.pipe(
+        ofType(AuthActions.loadUserFromStorage),
+        map(() => {
+          const accessToken = localStorage.getItem(this.STORAGE_KEY_ACCESS_TOKEN);
+          const refreshToken = localStorage.getItem(this.STORAGE_KEY_REFRESH_TOKEN);
+          const userJson = localStorage.getItem(this.STORAGE_KEY_USER);
+
+          if (accessToken && refreshToken && userJson) {
+            const user = JSON.parse(userJson);
+            return AuthActions.loadUserFromStorageSuccess({
+              accessToken,
+              refreshToken,
+              user
+            });
+          }
+
+          return AuthActions.loadUserFromStorageFailure();
+        })
+      )
+    );
+  }
 }
-

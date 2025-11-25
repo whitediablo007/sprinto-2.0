@@ -165,14 +165,14 @@
 
 ### Testing Infrastructure
 
-- [ ] T033 [P] Написать unit тест для AuthService в backend/src/test/java/com/sprinto/tms/unit/AuthServiceTest.java
-- [ ] T034 [P] Написать integration тест для AuthController в backend/src/test/java/com/sprinto/tms/integration/AuthControllerTest.java
-- [ ] T035 [P] Написать unit тест для JwtUtil в backend/src/test/java/com/sprinto/tms/unit/JwtUtilTest.java
-- [ ] T036 [P] Написать WebSocket integration тест в backend/src/test/java/com/sprinto/tms/integration/WebSocketTest.java
-- [ ] T037 [P] Написать unit тест для AuthService (frontend) в frontend/src/app/core/auth/auth.service.spec.ts
-- [ ] T038 [P] Написать unit тест для auth store reducer в frontend/src/app/features/auth/store/auth.reducer.spec.ts
-- [ ] T039 [P] Написать unit тест для auth store effects в frontend/src/app/features/auth/store/auth.effects.spec.ts
-- [ ] T040 [P] Написать unit тест для WebSocketService в frontend/src/app/core/services/websocket.service.spec.ts
+- [x] T033 [P] Написать unit тест для AuthService в backend/src/test/java/com/sprinto/tms/unit/AuthServiceTest.java
+- [x] T034 [P] Написать integration тест для AuthController в backend/src/test/java/com/sprinto/tms/integration/AuthControllerTest.java
+- [x] T035 [P] Написать unit тест для JwtUtil в backend/src/test/java/com/sprinto/tms/unit/JwtUtilTest.java
+- [x] T036 [P] Написать WebSocket integration тест в backend/src/test/java/com/sprinto/tms/integration/WebSocketTest.java
+- [x] T037 [P] Написать unit тест для AuthService (frontend) в frontend/src/app/core/auth/auth.service.spec.ts
+- [x] T038 [P] Написать unit тест для auth store reducer в frontend/src/app/features/auth/store/auth.reducer.spec.ts
+- [x] T039 [P] Написать unit тест для auth store effects в frontend/src/app/features/auth/store/auth.effects.spec.ts
+- [x] T040 [P] Написать unit тест для WebSocketService в frontend/src/app/core/services/websocket.service.spec.ts
 
 ---
 

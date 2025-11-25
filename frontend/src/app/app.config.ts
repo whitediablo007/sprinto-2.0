@@ -5,7 +5,6 @@ import { provideStore } from '@ngrx/store';
 import { provideStoreDevtools } from '@ngrx/store-devtools';
 import { provideEffects } from '@ngrx/effects';
 import { provideAnimations } from '@angular/platform-browser/animations';
-import { DialogService } from 'primeng/dynamicdialog';
 import { routes } from './app.routes';
 import { rootReducers } from './store/root-state';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
@@ -35,8 +34,7 @@ export const appConfig: ApplicationConfig = {
       trace: false,
       traceLimit: 75
     }),
-    provideAnimations(),
-    DialogService
+    provideAnimations()
   ]
 };
 
