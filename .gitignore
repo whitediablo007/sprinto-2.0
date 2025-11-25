@@ -11,6 +11,7 @@ Thumbs.db
 *~
 
 # IDE
+.gigaide/
 .idea/
 .vscode/
 *.iml
@@ -34,6 +35,7 @@ logs/
 .env.production
 
 # Build outputs
+bin/
 dist/
 build/
 out/
@@ -80,3 +82,4 @@ backend/build/
 frontend/dist/
 frontend/.angular/
 frontend/node_modules/
+backend/bin/
