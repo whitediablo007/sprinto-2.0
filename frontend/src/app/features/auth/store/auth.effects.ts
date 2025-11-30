@@ -113,7 +113,13 @@ export class AuthEffects {
           tap(({ response }) => {
             localStorage.setItem(this.STORAGE_KEY_ACCESS_TOKEN, response.accessToken);
             localStorage.setItem(this.STORAGE_KEY_REFRESH_TOKEN, response.refreshToken);
-            localStorage.setItem(this.STORAGE_KEY_USER, JSON.stringify(response.user));
+            // Backend возвращает плоский объект, преобразуем в User
+            const user = {
+              id: response.userId,
+              email: response.email,
+              name: response.name
+            };
+            localStorage.setItem(this.STORAGE_KEY_USER, JSON.stringify(user));
           })
         ),
       { dispatch: false }
@@ -124,7 +130,7 @@ export class AuthEffects {
         this.actions$.pipe(
           ofType(AuthActions.loginSuccess, AuthActions.registerSuccess),
           tap(() => {
-            this.router.navigate(['/dashboard']);
+            this.router.navigate(['/tasks']);
           })
         ),
       { dispatch: false }
@@ -152,13 +158,21 @@ export class AuthEffects {
           const refreshToken = localStorage.getItem(this.STORAGE_KEY_REFRESH_TOKEN);
           const userJson = localStorage.getItem(this.STORAGE_KEY_USER);
 
-          if (accessToken && refreshToken && userJson) {
-            const user = JSON.parse(userJson);
-            return AuthActions.loadUserFromStorageSuccess({
-              accessToken,
-              refreshToken,
-              user
-            });
+          // Проверяем что значения не пустые и не "undefined"/"null" строки
+          if (accessToken && accessToken !== 'undefined' && accessToken !== 'null' &&
+              refreshToken && refreshToken !== 'undefined' && refreshToken !== 'null' &&
+              userJson && userJson !== 'undefined' && userJson !== 'null') {
+            try {
+              const user = JSON.parse(userJson);
+              return AuthActions.loadUserFromStorageSuccess({
+                accessToken,
+                refreshToken,
+                user
+              });
+            } catch (e) {
+              console.error('Failed to parse user from localStorage:', e);
+              return AuthActions.loadUserFromStorageFailure();
+            }
           }
 
           return AuthActions.loadUserFromStorageFailure();

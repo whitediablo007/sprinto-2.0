@@ -1,5 +1,7 @@
 import { ActionReducerMap } from '@ngrx/store';
 import { authReducer, AuthState } from '../features/auth/store/auth.reducer';
+import { tasksReducer, TasksState } from '../features/tasks/store/tasks.reducer';
+import { timeTrackingReducer, TimeTrackingState } from '../features/time-tracking/store/time-tracking.reducer';
 
 /**
  * Root application state interface.
@@ -9,9 +11,10 @@ import { authReducer, AuthState } from '../features/auth/store/auth.reducer';
  */
 export interface AppState {
   auth: AuthState;
+  tasks: TasksState;
+  timeTracking: TimeTrackingState;
   // Add other feature states here as they are implemented:
   // projects: ProjectsState;
-  // tasks: TasksState;
   // notifications: NotificationsState;
   // etc.
 }
@@ -23,7 +26,9 @@ export interface AppState {
  * Used by StoreModule.forRoot() in app configuration.
  */
 export const rootReducers: ActionReducerMap<AppState> = {
-  auth: authReducer
+  auth: authReducer,
+  tasks: tasksReducer,
+  timeTracking: timeTrackingReducer
   // Add other feature reducers here
 };
 

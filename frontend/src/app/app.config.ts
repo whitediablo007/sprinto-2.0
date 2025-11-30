@@ -1,4 +1,4 @@
-import { ApplicationConfig, provideZoneChangeDetection, isDevMode } from '@angular/core';
+import { ApplicationConfig, provideZoneChangeDetection, isDevMode, ErrorHandler } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideStore } from '@ngrx/store';
@@ -9,6 +9,9 @@ import { routes } from './app.routes';
 import { rootReducers } from './store/root-state';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
 import { AuthEffects } from './features/auth/store/auth.effects';
+import { TasksEffects } from './features/tasks/store/tasks.effects';
+import { TimeTrackingEffects } from './features/time-tracking/store/time-tracking.effects';
+import { GlobalErrorHandler } from './core/services/global-error-handler.service';
 
 /**
  * Root application configuration.
@@ -16,7 +19,8 @@ import { AuthEffects } from './features/auth/store/auth.effects';
  * Provides all necessary providers for the application including:
  * - Routing
  * - HTTP client with interceptors
- * - NgRx store with DevTools
+ * - NgRx store with DevTools (tasks, time-tracking, auth)
+ * - Global error handler
  * - Animations
  */
 export const appConfig: ApplicationConfig = {
@@ -27,14 +31,22 @@ export const appConfig: ApplicationConfig = {
       withInterceptors([authInterceptor])
     ),
     provideStore(rootReducers),
-    provideEffects([AuthEffects]),
+    provideEffects([
+      AuthEffects,
+      TasksEffects,
+      TimeTrackingEffects
+    ]),
     provideStoreDevtools({
       maxAge: 25,
       logOnly: !isDevMode(),
       trace: false,
       traceLimit: 75
     }),
-    provideAnimations()
+    provideAnimations(),
+    {
+      provide: ErrorHandler,
+      useClass: GlobalErrorHandler
+    }
   ]
 };
 

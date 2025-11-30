@@ -17,17 +17,26 @@ export interface RegisterRequest {
   name: string;
 }
 
+/**
+ * Response from backend auth endpoints.
+ * Backend возвращает плоский объект без вложенного user.
+ */
 export interface AuthResponse {
+  userId: string;
+  email: string;
+  name: string;
   accessToken: string;
   refreshToken: string;
-  user: User;
+  tokenType: string;
 }
 
+/**
+ * User model for frontend state.
+ */
 export interface User {
   id: string;
   email: string;
   name: string;
-  role: string;
 }
 
 export interface RefreshTokenRequest {

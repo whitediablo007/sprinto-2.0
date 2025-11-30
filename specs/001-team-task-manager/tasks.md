@@ -247,36 +247,36 @@
 
 ### Frontend: Models & Store
 
-- [ ] T057 [P] [US1] Создать Task model interface в frontend/src/app/shared/models/task.model.ts
-- [ ] T058 [P] [US1] Создать TimeEntry model interface в frontend/src/app/shared/models/time-entry.model.ts
-- [ ] T059 [US1] Создать tasks feature store (actions, reducer, effects, selectors) в frontend/src/app/features/tasks/store/
-- [ ] T060 [US1] Создать time-tracking feature store (actions, reducer, effects, selectors) в frontend/src/app/features/time-tracking/store/
+- [x] T057 [P] [US1] Создать Task model interface в frontend/src/app/shared/models/task.model.ts
+- [x] T058 [P] [US1] Создать TimeEntry model interface в frontend/src/app/shared/models/time-entry.model.ts
+- [x] T059 [US1] Создать tasks feature store (actions, reducer, effects, selectors) в frontend/src/app/features/tasks/store/
+- [x] T060 [US1] Создать time-tracking feature store (actions, reducer, effects, selectors) в frontend/src/app/features/time-tracking/store/
 
 ### Frontend: Services
 
-- [ ] T061 [P] [US1] Создать TasksApiService с методами create, getById, updateStatus в frontend/src/app/features/tasks/services/tasks-api.service.ts
-- [ ] T062 [P] [US1] Создать TimeTrackingApiService с методами startTimer, stopTimer в frontend/src/app/features/time-tracking/services/time-tracking-api.service.ts
-- [ ] T063 [US1] Создать TasksFacade service для скрытия NgRx details в frontend/src/app/features/tasks/services/tasks-facade.service.ts
-- [ ] T064 [US1] Создать TimerFacade service в frontend/src/app/features/time-tracking/services/timer-facade.service.ts
+- [x] T061 [P] [US1] Создать TasksApiService с методами create, getById, updateStatus в frontend/src/app/features/tasks/services/tasks-api.service.ts
+- [x] T062 [P] [US1] Создать TimeTrackingApiService с методами startTimer, stopTimer в frontend/src/app/features/time-tracking/services/time-tracking-api.service.ts
+- [x] T063 [US1] Создать TasksFacade service для скрытия NgRx details в frontend/src/app/features/tasks/services/tasks-facade.service.ts
+- [x] T064 [US1] Создать TimerFacade service в frontend/src/app/features/time-tracking/services/timer-facade.service.ts
 
 ### Frontend: Components (Presentational)
 
-- [ ] T065 [P] [US1] Создать TaskCardComponent (Dumb) с @Input task, @Output edit/delete в frontend/src/app/features/tasks/components/task-card.component.ts
-- [ ] T066 [P] [US1] Создать TaskFormComponent (Dumb) с Reactive Form в frontend/src/app/features/tasks/components/task-form.component.ts
-- [ ] T067 [P] [US1] Создать TimerDisplayComponent (Dumb) для floating button таймера в frontend/src/app/features/time-tracking/components/timer-display.component.ts
-- [ ] T068 [P] [US1] Создать TaskStatusBadgeComponent (Dumb) для отображения статуса в frontend/src/app/shared/components/task-status-badge.component.ts
+- [x] T065 [P] [US1] Создать TaskCardComponent (Dumb) с @Input task, @Output edit/delete в frontend/src/app/features/tasks/components/task-card.component.ts
+- [x] T066 [P] [US1] Создать TaskFormComponent (Dumb) с Reactive Form в frontend/src/app/features/tasks/components/task-form.component.ts
+- [x] T067 [P] [US1] Создать TimerDisplayComponent (Dumb) для floating button таймера в frontend/src/app/features/time-tracking/components/timer-display.component.ts
+- [x] T068 [P] [US1] Создать TaskStatusBadgeComponent (Dumb) для отображения статуса в frontend/src/app/shared/components/task-status-badge.component.ts
 
 ### Frontend: Components (Smart/Container)
 
-- [ ] T069 [US1] Создать TaskListContainerComponent (Smart) с подпиской на store в frontend/src/app/features/tasks/containers/task-list-container.component.ts
-- [ ] T070 [US1] Создать TaskDetailsContainerComponent (Smart) в frontend/src/app/features/tasks/containers/task-details-container.component.ts
-- [ ] T071 [US1] Создать TimerContainerComponent (Smart) с WebSocket подпиской на /user/queue/timer в frontend/src/app/features/time-tracking/containers/timer-container.component.ts
+- [x] T069 [US1] Создать TaskListContainerComponent (Smart) с подпиской на store в frontend/src/app/features/tasks/containers/task-list-container.component.ts
+- [x] T070 [US1] Создать TaskDetailsContainerComponent (Smart) в frontend/src/app/features/tasks/containers/task-details-container.component.ts
+- [x] T071 [US1] Создать TimerContainerComponent (Smart) с WebSocket подпиской на /ws/timer в frontend/src/app/features/time-tracking/containers/timer-container.component.ts
 
 ### Frontend: Routing & Module
 
-- [ ] T072 [US1] Настроить tasks routing module с lazy loading в frontend/src/app/features/tasks/tasks-routing.module.ts
-- [ ] T073 [US1] Создать TasksModule с импортом PrimeNG компонентов в frontend/src/app/features/tasks/tasks.module.ts
-- [ ] T074 [US1] Настроить app-routing для /tasks маршрута в frontend/src/app/app-routing.module.ts
+- [x] T072 [US1] Настроить tasks routes с lazy loading в frontend/src/app/features/tasks/tasks.routes.ts
+- [x] T073 [US1] Зарегистрировать tasks и timeTracking в root store (app.config.ts, root-state.ts)
+- [x] T074 [US1] Настроить app.routes для /tasks маршрута и добавить TimerContainer в app.component.ts
 
 ### Integration & Testing
 
@@ -1268,4 +1268,68 @@ Phase 1 (Setup) → Phase 2 (Foundational)
 **Готовность к реализации**: ✅ Да  
 **Дата создания**: 2025-11-14  
 **Следующий шаг**: Начать с Phase 1 (Setup) → T001
+
+---
+
+## ✅ Testing & Bug Fixes Log
+
+### Phase 3: User Story 1 - Frontend Testing (2025-11-26)
+
+**Тестирование**: ✅ Завершено  
+**Статус**: ✅ Критичные ошибки исправлены
+
+#### Найденные и исправленные ошибки:
+
+1. **Двойной `/api` в URL** - ✅ Исправлено
+   - Файлы: `tasks-api.service.ts`, `time-tracking-api.service.ts`
+   - Изменение: `${environment.apiUrl}/api/tasks` → `${environment.apiUrl}/tasks`
+
+2. **AuthUtilsService JSON.parse("undefined")** - ✅ Исправлено
+   - Файл: `auth-utils.service.ts`
+   - Проблема: `localStorage.getItem('user')` возвращал строку `"undefined"`
+   - Решение: Добавлена проверка `userJson !== 'undefined' && userJson !== 'null'`
+
+3. **TimerContainer без аутентификации** - ✅ Исправлено
+   - Файл: `timer-container.component.ts`
+   - Проблема: WebSocket и loadActiveTimer() вызывались без проверки авторизации
+   - Решение: Добавлена проверка `isAuthenticated()` перед вызовами
+
+4. **Дублирующиеся loadActiveTimer()** - ✅ Исправлено
+   - Файлы: `task-list-container.component.ts`, `task-details-container.component.ts`
+   - Проблема: Множественные вызовы одного и того же API
+   - Решение: Убраны лишние вызовы (таймер загружается глобально)
+
+5. **TaskDetails форма не отображается** - ✅ Исправлено
+   - Файл: `task-details-container.component.ts`
+   - Проблема: `params['id'] === 'new'` не работал для route `/tasks/new`
+   - Решение: Проверка через `urlSegments.some(segment => segment.path === 'new')`
+
+6. **Angular Watcher (EMFILE)** - ⚠️ Известная проблема
+   - Причина: macOS file descriptor limit
+   - Workaround: Manual dev server restart или `ulimit -n 10240`
+
+7. **CORS Errors** - ✅ Исправлено (26 ноября 2025)
+   - Backend теперь разрешает origin: `http://localhost:4200`
+   - Добавлена CORS конфигурация в `SecurityConfig.java`
+   - Удален дубликат CORS фильтра из `WebConfig.java`
+
+8. **JWT Authentication - IllegalStateException** - ✅ Исправлено (26 ноября 2025)
+   - Файлы: `JwtAuthenticationConverter.java`, `JwtAuthenticationManager.java`
+   - Проблема: `No provider found for UsernamePasswordAuthenticationToken`
+   - Решение: Реализован корректный reactive JWT authentication flow
+   - Backend теперь корректно обрабатывает JWT токены и возвращает 401 для неавторизованных запросов
+
+#### Результаты тестирования:
+- ✅ Compilation: 0 errors
+- ✅ Components: Все рендерятся корректно
+- ✅ Routing: Lazy loading работает
+- ✅ Forms: Reactive Forms с валидацией OK + форма создания задачи работает
+- ✅ NgRx Store: Auth, Tasks, TimeTracking OK
+- ✅ Console: 0 критичных ошибок (только dev mode warnings)
+- ✅ CORS: Настроен корректно для `http://localhost:4200`
+- ✅ JWT: Backend корректно обрабатывает JWT токены
+- ✅ Backend Errors: 0 ошибок в `application-error.log`
+- ⚠️ E2E: Требует регистрацию/логин пользователя
+
+**Детали**: См. `FRONTEND_TESTING_REPORT.md`, `BUGFIX_REPORT.md`, `CORS_JWT_FIX_REPORT.md`
 

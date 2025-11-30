@@ -45,7 +45,11 @@ export const authReducer = createReducer(
     ...state,
     accessToken: response.accessToken,
     refreshToken: response.refreshToken,
-    user: response.user,
+    user: {
+      id: response.userId,
+      email: response.email,
+      name: response.name
+    },
     isAuthenticated: true,
     loading: false,
     error: null
@@ -68,7 +72,11 @@ export const authReducer = createReducer(
     ...state,
     accessToken: response.accessToken,
     refreshToken: response.refreshToken,
-    user: response.user,
+    user: {
+      id: response.userId,
+      email: response.email,
+      name: response.name
+    },
     isAuthenticated: true,
     loading: false,
     error: null
@@ -90,7 +98,11 @@ export const authReducer = createReducer(
     ...state,
     accessToken: response.accessToken,
     refreshToken: response.refreshToken,
-    user: response.user,
+    user: {
+      id: response.userId,
+      email: response.email,
+      name: response.name
+    },
     isAuthenticated: true,
     loading: false,
     error: null

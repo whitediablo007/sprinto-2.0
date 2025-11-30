@@ -23,7 +23,11 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   // Get access token from store and attach to request
   return store.select(selectAccessToken).pipe(
     take(1),
-    exhaustMap(token => {
+    exhaustMap(storeToken => {
+      // Используем токен из store, или fallback на localStorage
+      // (store может не успеть обновиться при первой загрузке)
+      const token = storeToken || getTokenFromStorage();
+      
       let authReq = req;
       
       if (token) {
@@ -38,6 +42,22 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     })
   );
 };
+
+/**
+ * Fallback: получает токен напрямую из localStorage.
+ * Используется когда NgRx store ещё не успел обновиться.
+ */
+function getTokenFromStorage(): string | null {
+  try {
+    const token = localStorage.getItem('access_token');
+    if (token && token !== 'undefined' && token !== 'null') {
+      return token;
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
 
 /**
  * Adds Correlation ID header to request for distributed tracing.

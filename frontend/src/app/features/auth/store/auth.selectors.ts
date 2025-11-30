@@ -91,9 +91,10 @@ export const selectUserName = createSelector(
 
 /**
  * Select user role.
+ * Backend не возвращает роль, используем default 'USER'.
  */
 export const selectUserRole = createSelector(
   selectCurrentUser,
-  (user) => user?.role
+  (user) => user ? 'USER' : null
 );
 
