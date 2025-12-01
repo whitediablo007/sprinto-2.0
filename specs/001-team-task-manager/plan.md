@@ -171,7 +171,7 @@ specs/001-team-task-manager/
 backend/
 ├── src/
 │   ├── main/
-│   │   ├── java/com/sprinto/tms/
+│   │   ├── java/ru/get/tms/
 │   │   │   ├── config/              # Конфигурация Spring
 │   │   │   │   ├── SecurityConfig.java
 │   │   │   │   ├── R2dbcConfig.java
@@ -202,7 +202,7 @@ backend/
 │   │           ├── V2__add_indexes.sql
 │   │           └── ...
 │   └── test/
-│       ├── java/com/sprinto/tms/
+│       ├── java/ru/get/tms/
 │       │   ├── integration/         # Интеграционные тесты
 │       │   ├── unit/                # Unit тесты
 │       │   └── contract/            # Contract тесты

@@ -146,7 +146,7 @@
 - [X] T640 [P] Настроить JSON‑формат логов в Logback для production‑профиля (structured logging) согласно требованиям NFR-038–NFR-043 в backend/src/main/resources/logback-spring.xml
 - [X] T641 Реализовать WebFlux/WebFilter, генерирующий Correlation ID (если не передан) и записывающий его в MDC для всех входящих HTTP/WebSocket запросов
 - [X] T642 Обновить GlobalExceptionHandler для логирования ошибок с Correlation ID и возврата его в ответе (заголовок/поле ответа)
-- [X] T643 [P] Написать integration тест, проверяющий наличие JSON‑логов с Correlation ID для типового REST‑запроса в backend/src/test/java/com/sprinto/tms/integration/StructuredLoggingTest.java
+- [X] T643 [P] Написать integration тест, проверяющий наличие JSON‑логов с Correlation ID для типового REST‑запроса в backend/src/test/java/ru/get/tms/integration/StructuredLoggingTest.java
 
 ### Frontend Infrastructure
 
@@ -165,10 +165,10 @@
 
 ### Testing Infrastructure
 
-- [x] T033 [P] Написать unit тест для AuthService в backend/src/test/java/com/sprinto/tms/unit/AuthServiceTest.java
-- [x] T034 [P] Написать integration тест для AuthController в backend/src/test/java/com/sprinto/tms/integration/AuthControllerTest.java
-- [x] T035 [P] Написать unit тест для JwtUtil в backend/src/test/java/com/sprinto/tms/unit/JwtUtilTest.java
-- [x] T036 [P] Написать WebSocket integration тест в backend/src/test/java/com/sprinto/tms/integration/WebSocketTest.java
+- [x] T033 [P] Написать unit тест для AuthService в backend/src/test/java/ru/get/tms/unit/AuthServiceTest.java
+- [x] T034 [P] Написать integration тест для AuthController в backend/src/test/java/ru/get/tms/integration/AuthControllerTest.java
+- [x] T035 [P] Написать unit тест для JwtUtil в backend/src/test/java/ru/get/tms/unit/JwtUtilTest.java
+- [x] T036 [P] Написать WebSocket integration тест в backend/src/test/java/ru/get/tms/integration/WebSocketTest.java
 - [x] T037 [P] Написать unit тест для AuthService (frontend) в frontend/src/app/core/auth/auth.service.spec.ts
 - [x] T038 [P] Написать unit тест для auth store reducer в frontend/src/app/features/auth/store/auth.reducer.spec.ts
 - [x] T039 [P] Написать unit тест для auth store effects в frontend/src/app/features/auth/store/auth.effects.spec.ts
@@ -221,22 +221,22 @@
 
 ### Time Entry Audit Trail (FR-056-059)
 
-- [ ] T545 [P] Создать TimeEntryAudit entity в backend/src/main/java/com/sprinto/tms/domain/timeentry/TimeEntryAudit.java (auditId, timeEntryId, action, oldValue, newValue, reason, userId, timestamp)
-- [ ] T546 [P] Создать TimeEntryAuditRepository (R2DBC) в backend/src/main/java/com/sprinto/tms/repository/TimeEntryAuditRepository.java
-- [ ] T547 Реализовать AuditTrailService для автоматического логирования изменений TimeEntry в backend/src/main/java/com/sprinto/tms/service/AuditTrailService.java
+- [ ] T545 [P] Создать TimeEntryAudit entity в backend/src/main/java/ru/get/tms/domain/timeentry/TimeEntryAudit.java (auditId, timeEntryId, action, oldValue, newValue, reason, userId, timestamp)
+- [ ] T546 [P] Создать TimeEntryAuditRepository (R2DBC) в backend/src/main/java/ru/get/tms/repository/TimeEntryAuditRepository.java
+- [ ] T547 Реализовать AuditTrailService для автоматического логирования изменений TimeEntry в backend/src/main/java/ru/get/tms/service/AuditTrailService.java
 - [ ] T548 Интегрировать AuditTrailService в TimeTrackingService (логирование EDIT, DELETE, RESTORE операций)
 - [ ] T549 Добавить endpoint GET /api/time-entries/{id}/audit в TimeTrackingController для получения истории изменений
-- [ ] T550 [P] Создать TimeEntryAuditDTO в backend/src/main/java/com/sprinto/tms/dto/timeentry/TimeEntryAuditDTO.java
+- [ ] T550 [P] Создать TimeEntryAuditDTO в backend/src/main/java/ru/get/tms/dto/timeentry/TimeEntryAuditDTO.java
 - [ ] T551 [P] Создать TimeEntryAuditListComponent (Dumb) для отображения истории изменений в frontend/src/app/features/time-tracking/components/time-entry-audit-list.component.ts
 - [ ] T552 [P] Создать RestoreTimeEntryDialogComponent (Dumb) для восстановления удалённых записей (ADMIN) в frontend/src/app/features/time-tracking/components/restore-time-entry-dialog.component.ts
-- [ ] T553 Написать integration тест для audit trail в backend/src/test/java/com/sprinto/tms/integration/TimeEntryAuditTest.java
+- [ ] T553 Написать integration тест для audit trail в backend/src/test/java/ru/get/tms/integration/TimeEntryAuditTest.java
 
 ### Timer State Persistence (FR-063, NFR-045, SC-010)
 
 - [ ] T600 [US1] Реализовать сохранение состояния активного таймера на backend (расширение модели TimeEntry или отдельный snapshot-entity) с привязкой к пользователю и задаче
 - [ ] T601 [US1] Добавить REST endpoint или метод в TimeTrackingController для получения текущего активного таймера пользователя при входе в систему
 - [ ] T602 [US1] Обновить TimerFacade и TimerContainerComponent во frontend для запроса состояния таймера при инициализации и показа диалога «продолжить/остановить» при обнаружении активного таймера
-- [ ] T603 [P] [US1] Написать integration тест для сценария восстановления активного таймера (закрытие браузера → повторный вход) в backend/src/test/java/com/sprinto/tms/integration/ActiveTimerPersistenceTest.java
+- [ ] T603 [P] [US1] Написать integration тест для сценария восстановления активного таймера (закрытие браузера → повторный вход) в backend/src/test/java/ru/get/tms/integration/ActiveTimerPersistenceTest.java
 - [ ] T604 [P] [US1] Написать E2E тест для SC-010 (сохранение/восстановление активного таймера) в frontend/tests/e2e/active-timer-persistence.spec.ts
 
 ### Time Entry Overlap Conflict Visualization (FR-054, FR-064, SC-016)
@@ -280,11 +280,11 @@
 
 ### Integration & Testing
 
-- [ ] T075 [US1] Написать integration тест для TaskController в backend/src/test/java/com/sprinto/tms/integration/TaskControllerTest.java
-- [ ] T076 [US1] Написать integration тест для TimeTrackingController в backend/src/test/java/com/sprinto/tms/integration/TimeTrackingControllerTest.java
-- [ ] T077 [US1] Написать unit тест для TaskService в backend/src/test/java/com/sprinto/tms/unit/TaskServiceTest.java
-- [ ] T078 [US1] Написать unit тест для TimeTrackingService в backend/src/test/java/com/sprinto/tms/unit/TimeTrackingServiceTest.java
-- [ ] T079 [US1] Написать unit тест для TimerScheduler в backend/src/test/java/com/sprinto/tms/unit/TimerSchedulerTest.java
+- [ ] T075 [US1] Написать integration тест для TaskController в backend/src/test/java/ru/get/tms/integration/TaskControllerTest.java
+- [ ] T076 [US1] Написать integration тест для TimeTrackingController в backend/src/test/java/ru/get/tms/integration/TimeTrackingControllerTest.java
+- [ ] T077 [US1] Написать unit тест для TaskService в backend/src/test/java/ru/get/tms/unit/TaskServiceTest.java
+- [ ] T078 [US1] Написать unit тест для TimeTrackingService в backend/src/test/java/ru/get/tms/unit/TimeTrackingServiceTest.java
+- [ ] T079 [US1] Написать unit тест для TimerScheduler в backend/src/test/java/ru/get/tms/unit/TimerSchedulerTest.java
 - [ ] T080 [P] [US1] Написать unit тест для TaskFormComponent в frontend/src/app/features/tasks/components/task-form.component.spec.ts
 - [ ] T081 [P] [US1] Написать unit тест для TaskCardComponent в frontend/src/app/features/tasks/components/task-card.component.spec.ts
 - [ ] T082 [P] [US1] Написать unit тест для tasks store reducer в frontend/src/app/features/tasks/store/tasks.reducer.spec.ts
@@ -310,16 +310,16 @@
 
 ### Backend: Domain & Repository
 
-- [ ] T554 [P] [US2] Создать domain entity ProjectMember в backend/src/main/java/com/sprinto/tms/domain/project/ProjectMember.java
-- [ ] T555 [P] [US2] Создать ProjectMemberRepository (R2DBC) в backend/src/main/java/com/sprinto/tms/repository/ProjectMemberRepository.java
+- [ ] T554 [P] [US2] Создать domain entity ProjectMember в backend/src/main/java/ru/get/tms/domain/project/ProjectMember.java
+- [ ] T555 [P] [US2] Создать ProjectMemberRepository (R2DBC) в backend/src/main/java/ru/get/tms/repository/ProjectMemberRepository.java
 
 ### Backend: DTOs & Services
 
-- [ ] T556 [P] [US2] Создать ProjectCreateDTO, ProjectUpdateDTO, ProjectResponseDTO в backend/src/main/java/com/sprinto/tms/dto/project/
-- [ ] T557 [P] [US2] Создать ProjectMemberDTO, AddMemberRequest в backend/src/main/java/com/sprinto/tms/dto/project/
-- [ ] T558 [P] [US2] Создать ProjectMapper (MapStruct) в backend/src/main/java/com/sprinto/tms/mapper/ProjectMapper.java
-- [ ] T559 [US2] Реализовать ProjectService с методами create, update, addMember, removeMember, getMembers в backend/src/main/java/com/sprinto/tms/service/ProjectService.java
-- [ ] T560 [US2] Реализовать ProjectMemberService для управления ролями в backend/src/main/java/com/sprinto/tms/service/ProjectMemberService.java
+- [ ] T556 [P] [US2] Создать ProjectCreateDTO, ProjectUpdateDTO, ProjectResponseDTO в backend/src/main/java/ru/get/tms/dto/project/
+- [ ] T557 [P] [US2] Создать ProjectMemberDTO, AddMemberRequest в backend/src/main/java/ru/get/tms/dto/project/
+- [ ] T558 [P] [US2] Создать ProjectMapper (MapStruct) в backend/src/main/java/ru/get/tms/mapper/ProjectMapper.java
+- [ ] T559 [US2] Реализовать ProjectService с методами create, update, addMember, removeMember, getMembers в backend/src/main/java/ru/get/tms/service/ProjectService.java
+- [ ] T560 [US2] Реализовать ProjectMemberService для управления ролями в backend/src/main/java/ru/get/tms/service/ProjectMemberService.java
 
 ### Backend: Project Archive & Restoration (FR-015–FR-019, NFR-045, NFR-047)
 
@@ -328,8 +328,8 @@
 
 ### Backend: Controllers
 
-- [ ] T561 [US2] Реализовать ProjectController (POST, GET, PUT, DELETE /api/projects) в backend/src/main/java/com/sprinto/tms/api/rest/ProjectController.java
-- [ ] T562 [US2] Реализовать ProjectMembersController (POST /api/projects/{id}/members, DELETE /api/projects/{id}/members/{userId}) в backend/src/main/java/com/sprinto/tms/api/rest/ProjectMembersController.java
+- [ ] T561 [US2] Реализовать ProjectController (POST, GET, PUT, DELETE /api/projects) в backend/src/main/java/ru/get/tms/api/rest/ProjectController.java
+- [ ] T562 [US2] Реализовать ProjectMembersController (POST /api/projects/{id}/members, DELETE /api/projects/{id}/members/{userId}) в backend/src/main/java/ru/get/tms/api/rest/ProjectMembersController.java
 
 ### Frontend: Project Archive UI (FR-015–FR-019)
 
@@ -339,16 +339,16 @@
 
 ### Testing: Project Archive Lifecycle (FR-015–FR-019, NFR-045, NFR-047)
 
-- [ ] T710 [US2] Написать integration тесты для полного жизненного цикла проекта (create → archive → restore → hard delete после 30+ дней) в backend/src/test/java/com/sprinto/tms/integration/ProjectArchiveLifecycleTest.java (см. FR-015–FR-019, NFR-045, NFR-047)
+- [ ] T710 [US2] Написать integration тесты для полного жизненного цикла проекта (create → archive → restore → hard delete после 30+ дней) в backend/src/test/java/ru/get/tms/integration/ProjectArchiveLifecycleTest.java (см. FR-015–FR-019, NFR-045, NFR-047)
 
 ### Backend: Security & Authorization
 
-- [ ] T563 [US2] Создать ProjectPermissionEvaluator для проверки прав доступа в backend/src/main/java/com/sprinto/tms/security/ProjectPermissionEvaluator.java
+- [ ] T563 [US2] Создать ProjectPermissionEvaluator для проверки прав доступа в backend/src/main/java/ru/get/tms/security/ProjectPermissionEvaluator.java
 - [ ] T564 [US2] Добавить @PreAuthorize аннотации в ProjectController с проверкой PROJECT_OWNER роли
 
 ### Backend: WebSocket Events
 
-- [ ] T565 [US2] Создать ProjectEventPublisher для отправки событий на /topic/project.{projectId} в backend/src/main/java/com/sprinto/tms/api/websocket/ProjectEventPublisher.java
+- [ ] T565 [US2] Создать ProjectEventPublisher для отправки событий на /topic/project.{projectId} в backend/src/main/java/ru/get/tms/api/websocket/ProjectEventPublisher.java
 - [ ] T566 [US2] Интегрировать ProjectEventPublisher в ProjectService (события MEMBER_ADDED, MEMBER_REMOVED, PROJECT_UPDATED)
 
 ### Frontend: Models & Store
@@ -384,9 +384,9 @@
 
 ### Integration & Testing
 
-- [ ] T101 [US2] Написать integration тест для ProjectController в backend/src/test/java/com/sprinto/tms/integration/ProjectControllerTest.java
-- [ ] T102 [US2] Написать integration тест для ProjectMembersController в backend/src/test/java/com/sprinto/tms/integration/ProjectMembersControllerTest.java
-- [ ] T103 [P] [US2] Написать unit тест для ProjectService в backend/src/test/java/com/sprinto/tms/unit/ProjectServiceTest.java
+- [ ] T101 [US2] Написать integration тест для ProjectController в backend/src/test/java/ru/get/tms/integration/ProjectControllerTest.java
+- [ ] T102 [US2] Написать integration тест для ProjectMembersController в backend/src/test/java/ru/get/tms/integration/ProjectMembersControllerTest.java
+- [ ] T103 [P] [US2] Написать unit тест для ProjectService в backend/src/test/java/ru/get/tms/unit/ProjectServiceTest.java
 
 ---
 
@@ -403,11 +403,11 @@
 
 ### Backend: Services & Endpoints
 
-- [ ] T104 [P] [US3] Создать DashboardService для агрегации данных дашборда в backend/src/main/java/com/sprinto/tms/service/DashboardService.java
-- [ ] T105 [P] [US3] Создать DashboardDTO с виджетами данными в backend/src/main/java/com/sprinto/tms/dto/dashboard/DashboardDTO.java
-- [ ] T106 [US3] Реализовать DashboardController (GET /api/dashboard/personal) в backend/src/main/java/com/sprinto/tms/api/rest/DashboardController.java
-- [ ] T107 [US3] Создать UserSettingsService для сохранения компоновки виджетов в backend/src/main/java/com/sprinto/tms/service/UserSettingsService.java
-- [ ] T108 [US3] Реализовать UserSettingsController (PUT /api/users/me/settings) в backend/src/main/java/com/sprinto/tms/api/rest/UserSettingsController.java
+- [ ] T104 [P] [US3] Создать DashboardService для агрегации данных дашборда в backend/src/main/java/ru/get/tms/service/DashboardService.java
+- [ ] T105 [P] [US3] Создать DashboardDTO с виджетами данными в backend/src/main/java/ru/get/tms/dto/dashboard/DashboardDTO.java
+- [ ] T106 [US3] Реализовать DashboardController (GET /api/dashboard/personal) в backend/src/main/java/ru/get/tms/api/rest/DashboardController.java
+- [ ] T107 [US3] Создать UserSettingsService для сохранения компоновки виджетов в backend/src/main/java/ru/get/tms/service/UserSettingsService.java
+- [ ] T108 [US3] Реализовать UserSettingsController (PUT /api/users/me/settings) в backend/src/main/java/ru/get/tms/api/rest/UserSettingsController.java
 
 ### Frontend: Dashboard Store & Services
 
@@ -442,8 +442,8 @@
 
 ### Testing
 
-- [ ] T125 [US3] Написать integration тест для DashboardController в backend/src/test/java/com/sprinto/tms/integration/DashboardControllerTest.java
-- [ ] T126 [P] [US3] Написать unit тест для DashboardService в backend/src/test/java/com/sprinto/tms/unit/DashboardServiceTest.java
+- [ ] T125 [US3] Написать integration тест для DashboardController в backend/src/test/java/ru/get/tms/integration/DashboardControllerTest.java
+- [ ] T126 [P] [US3] Написать unit тест для DashboardService в backend/src/test/java/ru/get/tms/unit/DashboardServiceTest.java
 
 ---
 
@@ -461,16 +461,16 @@
 
 ### Backend: Services & DTOs
 
-- [ ] T127 [P] [US4] Создать ReportService для агрегации данных в backend/src/main/java/com/sprinto/tms/service/ReportService.java
-- [ ] T128 [P] [US4] Создать ProjectReportDTO, TaskReportDTO, SummaryReportDTO, PersonalReportDTO в backend/src/main/java/com/sprinto/tms/dto/report/
+- [ ] T127 [P] [US4] Создать ReportService для агрегации данных в backend/src/main/java/ru/get/tms/service/ReportService.java
+- [ ] T128 [P] [US4] Создать ProjectReportDTO, TaskReportDTO, SummaryReportDTO, PersonalReportDTO в backend/src/main/java/ru/get/tms/dto/report/
 - [ ] T129 [US4] Реализовать методы генерации отчетов в ReportService (project, task, summary, personal reports)
-- [ ] T130 [US4] Создать ExcelExportService с Apache POI для генерации .xlsx в backend/src/main/java/com/sprinto/tms/service/ExcelExportService.java
-- [ ] T131 [US4] Создать CsvExportService для экспорта в CSV в backend/src/main/java/com/sprinto/tms/service/CsvExportService.java
+- [ ] T130 [US4] Создать ExcelExportService с Apache POI для генерации .xlsx в backend/src/main/java/ru/get/tms/service/ExcelExportService.java
+- [ ] T131 [US4] Создать CsvExportService для экспорта в CSV в backend/src/main/java/ru/get/tms/service/CsvExportService.java
 
 ### Backend: Controllers
 
-- [ ] T132 [US4] Реализовать ReportsController (GET /api/reports/project/{id}, /api/reports/task, /api/reports/summary) в backend/src/main/java/com/sprinto/tms/api/rest/ReportsController.java
-- [ ] T133 [US4] Реализовать ExportController (GET /api/reports/export/excel, /api/reports/export/csv) с streaming download в backend/src/main/java/com/sprinto/tms/api/rest/ExportController.java
+- [ ] T132 [US4] Реализовать ReportsController (GET /api/reports/project/{id}, /api/reports/task, /api/reports/summary) в backend/src/main/java/ru/get/tms/api/rest/ReportsController.java
+- [ ] T133 [US4] Реализовать ExportController (GET /api/reports/export/excel, /api/reports/export/csv) с streaming download в backend/src/main/java/ru/get/tms/api/rest/ExportController.java
 
 ### Frontend: Reports Store & Services
 
@@ -505,8 +505,8 @@
 
 ### Testing
 
-- [ ] T150 [US4] Написать integration тест для ReportsController в backend/src/test/java/com/sprinto/tms/integration/ReportsControllerTest.java
-- [ ] T151 [P] [US4] Написать unit тест для ExcelExportService в backend/src/test/java/com/sprinto/tms/unit/ExcelExportServiceTest.java
+- [ ] T150 [US4] Написать integration тест для ReportsController в backend/src/test/java/ru/get/tms/integration/ReportsControllerTest.java
+- [ ] T151 [P] [US4] Написать unit тест для ExcelExportService в backend/src/test/java/ru/get/tms/unit/ExcelExportServiceTest.java
 
 ---
 
@@ -525,24 +525,24 @@
 
 ### Backend: Domain & Repository
 
-- [ ] T152 [P] [US5] Создать domain entity Notification в backend/src/main/java/com/sprinto/tms/domain/notification/Notification.java
-- [ ] T153 [P] [US5] Создать NotificationRepository (R2DBC) в backend/src/main/java/com/sprinto/tms/repository/NotificationRepository.java
+- [ ] T152 [P] [US5] Создать domain entity Notification в backend/src/main/java/ru/get/tms/domain/notification/Notification.java
+- [ ] T153 [P] [US5] Создать NotificationRepository (R2DBC) в backend/src/main/java/ru/get/tms/repository/NotificationRepository.java
 
 ### Backend: Services
 
-- [ ] T154 [US5] Создать NotificationService с методами create, send, markAsRead в backend/src/main/java/com/sprinto/tms/service/NotificationService.java
-- [ ] T155 [US5] Создать EmailNotificationService с Spring Mail и Thymeleaf templates в backend/src/main/java/com/sprinto/tms/service/EmailNotificationService.java
-- [ ] T156 [US5] Создать PushNotificationService с Web Push library в backend/src/main/java/com/sprinto/tms/service/PushNotificationService.java
-- [ ] T157 [US5] Создать NotificationRouter для routing по каналам на основе user preferences в backend/src/main/java/com/sprinto/tms/service/NotificationRouter.java
+- [ ] T154 [US5] Создать NotificationService с методами create, send, markAsRead в backend/src/main/java/ru/get/tms/service/NotificationService.java
+- [ ] T155 [US5] Создать EmailNotificationService с Spring Mail и Thymeleaf templates в backend/src/main/java/ru/get/tms/service/EmailNotificationService.java
+- [ ] T156 [US5] Создать PushNotificationService с Web Push library в backend/src/main/java/ru/get/tms/service/PushNotificationService.java
+- [ ] T157 [US5] Создать NotificationRouter для routing по каналам на основе user preferences в backend/src/main/java/ru/get/tms/service/NotificationRouter.java
 
 ### Backend: Resilience & Graceful Degradation (Notifications)
 
 - [ ] T633 [US5] Добавить обработку ошибок и таймаутов внешнего почтового сервиса в EmailNotificationService с логированием и безопасным отказом, не блокирующим бизнес‑операции
-- [ ] T634 [P] [US5] Написать integration тест для сценариев деградации email‑уведомлений в backend/src/test/java/com/sprinto/tms/integration/EmailNotificationResilienceTest.java
+- [ ] T634 [P] [US5] Написать integration тест для сценариев деградации email‑уведомлений в backend/src/test/java/ru/get/tms/integration/EmailNotificationResilienceTest.java
 
 ### Backend: WebSocket Handler
 
-- [ ] T158 [US5] Создать NotificationWebSocketHandler для отправки на /user/queue/notifications в backend/src/main/java/com/sprinto/tms/api/websocket/NotificationWebSocketHandler.java
+- [ ] T158 [US5] Создать NotificationWebSocketHandler для отправки на /user/queue/notifications в backend/src/main/java/ru/get/tms/api/websocket/NotificationWebSocketHandler.java
 - [ ] T159 [US5] Интегрировать NotificationWebSocketHandler в NotificationService
 
 ### Backend: Email Templates
@@ -553,8 +553,8 @@
 
 ### Backend: Controllers
 
-- [ ] T163 [US5] Реализовать NotificationsController (GET /api/notifications, PUT /api/notifications/{id}/read, PUT /api/notifications/read-all) в backend/src/main/java/com/sprinto/tms/api/rest/NotificationsController.java
-- [ ] T164 [US5] Реализовать NotificationSettingsController (GET /api/users/me/notification-settings, PUT /api/users/me/notification-settings) в backend/src/main/java/com/sprinto/tms/api/rest/NotificationSettingsController.java
+- [ ] T163 [US5] Реализовать NotificationsController (GET /api/notifications, PUT /api/notifications/{id}/read, PUT /api/notifications/read-all) в backend/src/main/java/ru/get/tms/api/rest/NotificationsController.java
+- [ ] T164 [US5] Реализовать NotificationSettingsController (GET /api/users/me/notification-settings, PUT /api/users/me/notification-settings) в backend/src/main/java/ru/get/tms/api/rest/NotificationSettingsController.java
 
 ### Frontend: Notifications Store & Services
 
@@ -587,9 +587,9 @@
 
 ### Testing
 
-- [ ] T179 [US5] Написать integration тест для NotificationsController в backend/src/test/java/com/sprinto/tms/integration/NotificationsControllerTest.java
-- [ ] T180 [P] [US5] Написать unit тест для NotificationService в backend/src/test/java/com/sprinto/tms/unit/NotificationServiceTest.java
-- [ ] T181 [P] [US5] Написать unit тест для EmailNotificationService в backend/src/test/java/com/sprinto/tms/unit/EmailNotificationServiceTest.java
+- [ ] T179 [US5] Написать integration тест для NotificationsController в backend/src/test/java/ru/get/tms/integration/NotificationsControllerTest.java
+- [ ] T180 [P] [US5] Написать unit тест для NotificationService в backend/src/test/java/ru/get/tms/unit/NotificationServiceTest.java
+- [ ] T181 [P] [US5] Написать unit тест для EmailNotificationService в backend/src/test/java/ru/get/tms/unit/EmailNotificationServiceTest.java
 
 ---
 
@@ -608,28 +608,28 @@
 ### Backend: Google Calendar Integration
 
 - [ ] T182 [P] [US6] Добавить Google Calendar API client library в backend/build.gradle.kts
-- [ ] T183 [P] [US6] Создать domain entity CalendarSettings в backend/src/main/java/com/sprinto/tms/domain/calendar/CalendarSettings.java
-- [ ] T184 [P] [US6] Создать CalendarSettingsRepository (R2DBC) в backend/src/main/java/com/sprinto/tms/repository/CalendarSettingsRepository.java
-- [ ] T185 [US6] Создать GoogleCalendarService с методами authenticate, listCalendars, syncTask в backend/src/main/java/com/sprinto/tms/service/GoogleCalendarService.java
-- [ ] T186 [US6] Создать CalendarSyncScheduler для периодической синхронизации (@Scheduled) в backend/src/main/java/com/sprinto/tms/service/CalendarSyncScheduler.java
+- [ ] T183 [P] [US6] Создать domain entity CalendarSettings в backend/src/main/java/ru/get/tms/domain/calendar/CalendarSettings.java
+- [ ] T184 [P] [US6] Создать CalendarSettingsRepository (R2DBC) в backend/src/main/java/ru/get/tms/repository/CalendarSettingsRepository.java
+- [ ] T185 [US6] Создать GoogleCalendarService с методами authenticate, listCalendars, syncTask в backend/src/main/java/ru/get/tms/service/GoogleCalendarService.java
+- [ ] T186 [US6] Создать CalendarSyncScheduler для периодической синхронизации (@Scheduled) в backend/src/main/java/ru/get/tms/service/CalendarSyncScheduler.java
 
 ### Backend: OAuth 2.0 Flow
 
-- [ ] T187 [US6] Реализовать GoogleOAuthController (GET /api/calendar/oauth/authorize, GET /api/calendar/oauth/callback) в backend/src/main/java/com/sprinto/tms/api/rest/GoogleOAuthController.java
+- [ ] T187 [US6] Реализовать GoogleOAuthController (GET /api/calendar/oauth/authorize, GET /api/calendar/oauth/callback) в backend/src/main/java/ru/get/tms/api/rest/GoogleOAuthController.java
 - [ ] T188 [US6] Создать метод обмена authorization code на tokens в GoogleCalendarService
 - [ ] T189 [US6] Реализовать шифрование access_token и refresh_token (AES-256) в GoogleCalendarService
 - [ ] T190 [US6] Реализовать refresh token rotation в GoogleCalendarService
 
 ### Backend: Calendar Sync
 
-- [ ] T191 [US6] Реализовать CalendarController (GET /api/calendar/settings, PUT /api/calendar/settings, POST /api/calendar/sync) в backend/src/main/java/com/sprinto/tms/api/rest/CalendarController.java
-- [ ] T192 [US6] Создать CalendarEventMapper для Task → Google Calendar Event в backend/src/main/java/com/sprinto/tms/mapper/CalendarEventMapper.java
+- [ ] T191 [US6] Реализовать CalendarController (GET /api/calendar/settings, PUT /api/calendar/settings, POST /api/calendar/sync) в backend/src/main/java/ru/get/tms/api/rest/CalendarController.java
+- [ ] T192 [US6] Создать CalendarEventMapper для Task → Google Calendar Event в backend/src/main/java/ru/get/tms/mapper/CalendarEventMapper.java
 - [ ] T193 [US6] Реализовать фильтрацию задач на основе sync_filters в GoogleCalendarService
 
 ### Backend: Resilience & Graceful Degradation (Google Calendar)
 
 - [ ] T631 [US6] Реализовать обработку недоступности Google Calendar API (таймауты, коды ошибок) с логированием, безопасным отключением синхронизации и уведомлением пользователя без блокировки основной работы с задачами
-- [ ] T632 [P] [US6] Написать integration тесты для CalendarController/GoogleCalendarService с эмуляцией недоступности внешнего сервиса (5xx/timeout) в backend/src/test/java/com/sprinto/tms/integration/GoogleCalendarResilienceTest.java
+- [ ] T632 [P] [US6] Написать integration тесты для CalendarController/GoogleCalendarService с эмуляцией недоступности внешнего сервиса (5xx/timeout) в backend/src/test/java/ru/get/tms/integration/GoogleCalendarResilienceTest.java
 
 ### Frontend: Calendar Store & Services
 
@@ -659,8 +659,8 @@
 
 ### Testing
 
-- [ ] T205 [US6] Написать integration тест для GoogleOAuthController в backend/src/test/java/com/sprinto/tms/integration/GoogleOAuthControllerTest.java
-- [ ] T206 [P] [US6] Написать unit тест для GoogleCalendarService в backend/src/test/java/com/sprinto/tms/unit/GoogleCalendarServiceTest.java
+- [ ] T205 [US6] Написать integration тест для GoogleOAuthController в backend/src/test/java/ru/get/tms/integration/GoogleOAuthControllerTest.java
+- [ ] T206 [P] [US6] Написать unit тест для GoogleCalendarService в backend/src/test/java/ru/get/tms/unit/GoogleCalendarServiceTest.java
 
 ---
 
@@ -678,15 +678,15 @@
 
 ### Backend: Analytics Services
 
-- [ ] T207 [US7] Создать AnalyticsService для расчета метрик эффективности в backend/src/main/java/com/sprinto/tms/service/AnalyticsService.java
-- [ ] T208 [US7] Создать LeaderboardService для топ пользователей в backend/src/main/java/com/sprinto/tms/service/LeaderboardService.java
-- [ ] T209 [US7] Создать BurndownChartService для расчета burndown данных в backend/src/main/java/com/sprinto/tms/service/BurndownChartService.java
+- [ ] T207 [US7] Создать AnalyticsService для расчета метрик эффективности в backend/src/main/java/ru/get/tms/service/AnalyticsService.java
+- [ ] T208 [US7] Создать LeaderboardService для топ пользователей в backend/src/main/java/ru/get/tms/service/LeaderboardService.java
+- [ ] T209 [US7] Создать BurndownChartService для расчета burndown данных в backend/src/main/java/ru/get/tms/service/BurndownChartService.java
 
 ### Backend: DTOs & Controllers
 
-- [ ] T210 [P] [US7] Создать AdminDashboardDTO, LeaderboardEntryDTO, MetricDTO в backend/src/main/java/com/sprinto/tms/dto/analytics/
-- [ ] T211 [US7] Реализовать AnalyticsController (GET /api/analytics/admin-dashboard, GET /api/analytics/leaderboard) в backend/src/main/java/com/sprinto/tms/api/rest/AnalyticsController.java
-- [ ] T212 [US7] Реализовать ProjectAnalyticsController (GET /api/projects/{id}/burndown, GET /api/projects/{id}/metrics) в backend/src/main/java/com/sprinto/tms/api/rest/ProjectAnalyticsController.java
+- [ ] T210 [P] [US7] Создать AdminDashboardDTO, LeaderboardEntryDTO, MetricDTO в backend/src/main/java/ru/get/tms/dto/analytics/
+- [ ] T211 [US7] Реализовать AnalyticsController (GET /api/analytics/admin-dashboard, GET /api/analytics/leaderboard) в backend/src/main/java/ru/get/tms/api/rest/AnalyticsController.java
+- [ ] T212 [US7] Реализовать ProjectAnalyticsController (GET /api/projects/{id}/burndown, GET /api/projects/{id}/metrics) в backend/src/main/java/ru/get/tms/api/rest/ProjectAnalyticsController.java
 
 ### Frontend: Analytics Store & Services
 
@@ -715,7 +715,7 @@
 
 ### Testing
 
-- [ ] T226 [US7] Написать integration тест для AnalyticsController в backend/src/test/java/com/sprinto/tms/integration/AnalyticsControllerTest.java
+- [ ] T226 [US7] Написать integration тест для AnalyticsController в backend/src/test/java/ru/get/tms/integration/AnalyticsControllerTest.java
 
 ---
 
@@ -731,20 +731,20 @@
 
 ### Backend: Rating Services
 
-- [ ] T227 [US8] Создать ProductivityScoreService для расчета score в backend/src/main/java/com/sprinto/tms/service/ProductivityScoreService.java
-- [ ] T228 [US8] Создать RatingService для управления рейтингом в backend/src/main/java/com/sprinto/tms/service/RatingService.java
+- [ ] T227 [US8] Создать ProductivityScoreService для расчета score в backend/src/main/java/ru/get/tms/service/ProductivityScoreService.java
+- [ ] T228 [US8] Создать RatingService для управления рейтингом в backend/src/main/java/ru/get/tms/service/RatingService.java
 - [ ] T229 [US8] Реализовать @Scheduled job для ежедневного пересчета productivity score в RatingService
 
 ### Backend: DTOs & Controllers
 
-- [ ] T230 [P] [US8] Создать ProductivityScoreDTO, TeamRatingDTO в backend/src/main/java/com/sprinto/tms/dto/rating/
-- [ ] T231 [US8] Реализовать RatingController (GET /api/rating/me, GET /api/rating/team) в backend/src/main/java/com/sprinto/tms/api/rest/RatingController.java
+- [ ] T230 [P] [US8] Создать ProductivityScoreDTO, TeamRatingDTO в backend/src/main/java/ru/get/tms/dto/rating/
+- [ ] T231 [US8] Реализовать RatingController (GET /api/rating/me, GET /api/rating/team) в backend/src/main/java/ru/get/tms/api/rest/RatingController.java
 
 ### Backend: Privacy & Leaderboard Anonymization
 
-- [ ] T644 [US8] Расширить UserSettings entity и схему хранения (NFR-050, FR-114.1) полями настроек приватности рейтинга (видимость в leaderboard, режим анонимизации, отображаемое имя) в backend/src/main/java/com/sprinto/tms/domain/user/UserSettings.java
-- [ ] T645 [US8] Обновить RatingService/AnalyticsService для применения настроек приватности при формировании командного рейтинга и метрик (скрытие пользователей, анонимизация данных) в backend/src/main/java/com/sprinto/tms/service/RatingService.java
-- [ ] T646 [P] [US8] Написать integration тест, проверяющий соблюдение приватности и анонимизации в RatingController/AnalyticsController (скрытие/обезличивание записей) в backend/src/test/java/com/sprinto/tms/integration/RatingPrivacyTest.java
+- [ ] T644 [US8] Расширить UserSettings entity и схему хранения (NFR-050, FR-114.1) полями настроек приватности рейтинга (видимость в leaderboard, режим анонимизации, отображаемое имя) в backend/src/main/java/ru/get/tms/domain/user/UserSettings.java
+- [ ] T645 [US8] Обновить RatingService/AnalyticsService для применения настроек приватности при формировании командного рейтинга и метрик (скрытие пользователей, анонимизация данных) в backend/src/main/java/ru/get/tms/service/RatingService.java
+- [ ] T646 [P] [US8] Написать integration тест, проверяющий соблюдение приватности и анонимизации в RatingController/AnalyticsController (скрытие/обезличивание записей) в backend/src/test/java/ru/get/tms/integration/RatingPrivacyTest.java
 
 ### Frontend: Rating Store & Services
 
@@ -788,21 +788,21 @@
 
 ### Backend: Task Hierarchy
 
-- [ ] T240 [US9] Добавить методы работы с иерархией в TaskService (createSubtask, moveTask, getSubtasks) в backend/src/main/java/com/sprinto/tms/service/TaskService.java
+- [ ] T240 [US9] Добавить методы работы с иерархией в TaskService (createSubtask, moveTask, getSubtasks) в backend/src/main/java/ru/get/tms/service/TaskService.java
 - [ ] T241 [US9] Реализовать валидацию max hierarchy level (5 уровней) в TaskService
 - [ ] T242 [US9] Создать метод calculateProgress для родительских задач в TaskService
 
 ### Backend: Task Dependencies
 
-- [ ] T243 [P] [US9] Создать domain entity TaskDependency в backend/src/main/java/com/sprinto/tms/domain/task/TaskDependency.java
-- [ ] T244 [P] [US9] Создать TaskDependencyRepository (R2DBC) в backend/src/main/java/com/sprinto/tms/repository/TaskDependencyRepository.java
-- [ ] T245 [US9] Создать TaskDependencyService с методами addDependency, removeDependency, checkCircular в backend/src/main/java/com/sprinto/tms/service/TaskDependencyService.java
+- [ ] T243 [P] [US9] Создать domain entity TaskDependency в backend/src/main/java/ru/get/tms/domain/task/TaskDependency.java
+- [ ] T244 [P] [US9] Создать TaskDependencyRepository (R2DBC) в backend/src/main/java/ru/get/tms/repository/TaskDependencyRepository.java
+- [ ] T245 [US9] Создать TaskDependencyService с методами addDependency, removeDependency, checkCircular в backend/src/main/java/ru/get/tms/service/TaskDependencyService.java
 - [ ] T246 [US9] Реализовать алгоритм проверки циклических зависимостей в TaskDependencyService
 
 ### Backend: Controllers
 
-- [ ] T247 [US9] Добавить endpoints для иерархии в TaskController (POST /api/tasks/{id}/subtasks, PUT /api/tasks/{id}/move) в backend/src/main/java/com/sprinto/tms/api/rest/TaskController.java
-- [ ] T248 [US9] Реализовать TaskDependenciesController (POST /api/tasks/{id}/dependencies, DELETE /api/tasks/{id}/dependencies/{blockingTaskId}) в backend/src/main/java/com/sprinto/tms/api/rest/TaskDependenciesController.java
+- [ ] T247 [US9] Добавить endpoints для иерархии в TaskController (POST /api/tasks/{id}/subtasks, PUT /api/tasks/{id}/move) в backend/src/main/java/ru/get/tms/api/rest/TaskController.java
+- [ ] T248 [US9] Реализовать TaskDependenciesController (POST /api/tasks/{id}/dependencies, DELETE /api/tasks/{id}/dependencies/{blockingTaskId}) в backend/src/main/java/ru/get/tms/api/rest/TaskDependenciesController.java
 
 ### Frontend: Task Hierarchy Components
 
@@ -825,8 +825,8 @@
 
 ### Testing
 
-- [ ] T259 [US9] Написать integration тест для иерархии задач в backend/src/test/java/com/sprinto/tms/integration/TaskHierarchyTest.java
-- [ ] T260 [US9] Написать integration тест для зависимостей задач в backend/src/test/java/com/sprinto/tms/integration/TaskDependenciesTest.java
+- [ ] T259 [US9] Написать integration тест для иерархии задач в backend/src/test/java/ru/get/tms/integration/TaskHierarchyTest.java
+- [ ] T260 [US9] Написать integration тест для зависимостей задач в backend/src/test/java/ru/get/tms/integration/TaskDependenciesTest.java
 
 ---
 
@@ -847,55 +847,55 @@
 
 ### Backend: Comments Domain & Repository
 
-- [ ] T298 [P] [EXT] Создать domain entity Comment в backend/src/main/java/com/sprinto/tms/domain/comment/Comment.java
-- [ ] T299 [P] [EXT] Создать CommentRepository (R2DBC) в backend/src/main/java/com/sprinto/tms/repository/CommentRepository.java
+- [ ] T298 [P] [EXT] Создать domain entity Comment в backend/src/main/java/ru/get/tms/domain/comment/Comment.java
+- [ ] T299 [P] [EXT] Создать CommentRepository (R2DBC) в backend/src/main/java/ru/get/tms/repository/CommentRepository.java
 
 ### Backend: Comments Services & DTOs
 
-- [ ] T300 [P] [EXT] Создать CommentDTO, CommentCreateDTO, CommentResponseDTO в backend/src/main/java/com/sprinto/tms/dto/comment/
-- [ ] T301 [P] [EXT] Создать CommentMapper (MapStruct) в backend/src/main/java/com/sprinto/tms/mapper/CommentMapper.java
-- [ ] T302 [EXT] Реализовать CommentService с методами create, findByTaskId, delete, parseMentions в backend/src/main/java/com/sprinto/tms/service/CommentService.java
-- [ ] T303 [EXT] Реализовать MentionService для обработки @username упоминаний в backend/src/main/java/com/sprinto/tms/service/MentionService.java
+- [ ] T300 [P] [EXT] Создать CommentDTO, CommentCreateDTO, CommentResponseDTO в backend/src/main/java/ru/get/tms/dto/comment/
+- [ ] T301 [P] [EXT] Создать CommentMapper (MapStruct) в backend/src/main/java/ru/get/tms/mapper/CommentMapper.java
+- [ ] T302 [EXT] Реализовать CommentService с методами create, findByTaskId, delete, parseMentions в backend/src/main/java/ru/get/tms/service/CommentService.java
+- [ ] T303 [EXT] Реализовать MentionService для обработки @username упоминаний в backend/src/main/java/ru/get/tms/service/MentionService.java
 
 ### Backend: Comments Controllers
 
-- [ ] T304 [EXT] Реализовать CommentsController (POST /api/tasks/{taskId}/comments, GET /api/tasks/{taskId}/comments, DELETE /api/comments/{id}) в backend/src/main/java/com/sprinto/tms/api/rest/CommentsController.java
+- [ ] T304 [EXT] Реализовать CommentsController (POST /api/tasks/{taskId}/comments, GET /api/tasks/{taskId}/comments, DELETE /api/comments/{id}) в backend/src/main/java/ru/get/tms/api/rest/CommentsController.java
 - [ ] T305 [EXT] Интегрировать отправку уведомлений при упоминании пользователя в CommentService
 
 ### Backend: Tags/Labels Domain & Repository
 
-- [ ] T306 [P] [EXT] Создать domain entity Tag в backend/src/main/java/com/sprinto/tms/domain/tag/Tag.java
-- [ ] T307 [P] [EXT] Создать domain entity TaskTag (связь many-to-many) в backend/src/main/java/com/sprinto/tms/domain/task/TaskTag.java
-- [ ] T308 [P] [EXT] Создать TagRepository (R2DBC) в backend/src/main/java/com/sprinto/tms/repository/TagRepository.java
-- [ ] T309 [P] [EXT] Создать TaskTagRepository (R2DBC) в backend/src/main/java/com/sprinto/tms/repository/TaskTagRepository.java
+- [ ] T306 [P] [EXT] Создать domain entity Tag в backend/src/main/java/ru/get/tms/domain/tag/Tag.java
+- [ ] T307 [P] [EXT] Создать domain entity TaskTag (связь many-to-many) в backend/src/main/java/ru/get/tms/domain/task/TaskTag.java
+- [ ] T308 [P] [EXT] Создать TagRepository (R2DBC) в backend/src/main/java/ru/get/tms/repository/TagRepository.java
+- [ ] T309 [P] [EXT] Создать TaskTagRepository (R2DBC) в backend/src/main/java/ru/get/tms/repository/TaskTagRepository.java
 
 ### Backend: Tags Services & DTOs
 
-- [ ] T310 [P] [EXT] Создать TagDTO, TagCreateDTO в backend/src/main/java/com/sprinto/tms/dto/tag/
-- [ ] T311 [P] [EXT] Создать TagMapper (MapStruct) в backend/src/main/java/com/sprinto/tms/mapper/TagMapper.java
-- [ ] T312 [EXT] Реализовать TagService с методами create, findAll, findByProject, assignToTask, removeFromTask в backend/src/main/java/com/sprinto/tms/service/TagService.java
+- [ ] T310 [P] [EXT] Создать TagDTO, TagCreateDTO в backend/src/main/java/ru/get/tms/dto/tag/
+- [ ] T311 [P] [EXT] Создать TagMapper (MapStruct) в backend/src/main/java/ru/get/tms/mapper/TagMapper.java
+- [ ] T312 [EXT] Реализовать TagService с методами create, findAll, findByProject, assignToTask, removeFromTask в backend/src/main/java/ru/get/tms/service/TagService.java
 
 ### Backend: Tags Controllers
 
-- [ ] T313 [EXT] Реализовать TagsController (POST /api/tags, GET /api/tags, GET /api/projects/{id}/tags) в backend/src/main/java/com/sprinto/tms/api/rest/TagsController.java
-- [ ] T314 [EXT] Реализовать TaskTagsController (POST /api/tasks/{taskId}/tags, DELETE /api/tasks/{taskId}/tags/{tagId}) в backend/src/main/java/com/sprinto/tms/api/rest/TaskTagsController.java
+- [ ] T313 [EXT] Реализовать TagsController (POST /api/tags, GET /api/tags, GET /api/projects/{id}/tags) в backend/src/main/java/ru/get/tms/api/rest/TagsController.java
+- [ ] T314 [EXT] Реализовать TaskTagsController (POST /api/tasks/{taskId}/tags, DELETE /api/tasks/{taskId}/tags/{tagId}) в backend/src/main/java/ru/get/tms/api/rest/TaskTagsController.java
 
 ### Backend: Files Domain & Repository
 
-- [ ] T315 [P] [EXT] Создать domain entity File в backend/src/main/java/com/sprinto/tms/domain/file/File.java
-- [ ] T316 [P] [EXT] Создать FileRepository (R2DBC) в backend/src/main/java/com/sprinto/tms/repository/FileRepository.java
+- [ ] T315 [P] [EXT] Создать domain entity File в backend/src/main/java/ru/get/tms/domain/file/File.java
+- [ ] T316 [P] [EXT] Создать FileRepository (R2DBC) в backend/src/main/java/ru/get/tms/repository/FileRepository.java
 
 ### Backend: Files Services & Storage
 
-- [ ] T317 [P] [EXT] Создать FileDTO, FileUploadResponse в backend/src/main/java/com/sprinto/tms/dto/file/
-- [ ] T318 [EXT] Реализовать FileStorageService для сохранения файлов (локальное хранилище или S3) в backend/src/main/java/com/sprinto/tms/service/FileStorageService.java
-- [ ] T319 [EXT] Реализовать FileService с методами upload, download, delete, validateSize, validateType в backend/src/main/java/com/sprinto/tms/service/FileService.java
-- [ ] T320 [EXT] Реализовать FileQuotaService для проверки лимитов в backend/src/main/java/com/sprinto/tms/service/FileQuotaService.java
+- [ ] T317 [P] [EXT] Создать FileDTO, FileUploadResponse в backend/src/main/java/ru/get/tms/dto/file/
+- [ ] T318 [EXT] Реализовать FileStorageService для сохранения файлов (локальное хранилище или S3) в backend/src/main/java/ru/get/tms/service/FileStorageService.java
+- [ ] T319 [EXT] Реализовать FileService с методами upload, download, delete, validateSize, validateType в backend/src/main/java/ru/get/tms/service/FileService.java
+- [ ] T320 [EXT] Реализовать FileQuotaService для проверки лимитов в backend/src/main/java/ru/get/tms/service/FileQuotaService.java
 
 ### Backend: Files Controllers
 
-- [ ] T321 [EXT] Реализовать FilesController (POST /api/tasks/{taskId}/files, GET /api/files/{id}, DELETE /api/files/{id}) с multipart upload в backend/src/main/java/com/sprinto/tms/api/rest/FilesController.java
-- [ ] T322 [EXT] Реализовать FileDownloadController (GET /api/files/{id}/download) с streaming в backend/src/main/java/com/sprinto/tms/api/rest/FileDownloadController.java
+- [ ] T321 [EXT] Реализовать FilesController (POST /api/tasks/{taskId}/files, GET /api/files/{id}, DELETE /api/files/{id}) с multipart upload в backend/src/main/java/ru/get/tms/api/rest/FilesController.java
+- [ ] T322 [EXT] Реализовать FileDownloadController (GET /api/files/{id}/download) с streaming в backend/src/main/java/ru/get/tms/api/rest/FileDownloadController.java
 
 ### Frontend: Comments Models & Store
 
@@ -950,25 +950,25 @@
 
 ### Testing: Comments
 
-- [ ] T350 [EXT] Написать integration тест для CommentsController в backend/src/test/java/com/sprinto/tms/integration/CommentsControllerTest.java
-- [ ] T351 [P] [EXT] Написать unit тест для CommentService в backend/src/test/java/com/sprinto/tms/unit/CommentServiceTest.java
-- [ ] T352 [P] [EXT] Написать unit тест для MentionService в backend/src/test/java/com/sprinto/tms/unit/MentionServiceTest.java
+- [ ] T350 [EXT] Написать integration тест для CommentsController в backend/src/test/java/ru/get/tms/integration/CommentsControllerTest.java
+- [ ] T351 [P] [EXT] Написать unit тест для CommentService в backend/src/test/java/ru/get/tms/unit/CommentServiceTest.java
+- [ ] T352 [P] [EXT] Написать unit тест для MentionService в backend/src/test/java/ru/get/tms/unit/MentionServiceTest.java
 - [ ] T353 [P] [EXT] Написать unit тест для CommentFormComponent в frontend/src/app/features/comments/components/comment-form.component.spec.ts
 - [ ] T354 [P] [EXT] Написать unit тест для comments store reducer в frontend/src/app/features/comments/store/comments.reducer.spec.ts
 
 ### Testing: Tags
 
-- [ ] T355 [EXT] Написать integration тест для TagsController в backend/src/test/java/com/sprinto/tms/integration/TagsControllerTest.java
-- [ ] T356 [P] [EXT] Написать unit тест для TagService в backend/src/test/java/com/sprinto/tms/unit/TagServiceTest.java
+- [ ] T355 [EXT] Написать integration тест для TagsController в backend/src/test/java/ru/get/tms/integration/TagsControllerTest.java
+- [ ] T356 [P] [EXT] Написать unit тест для TagService в backend/src/test/java/ru/get/tms/unit/TagServiceTest.java
 - [ ] T357 [P] [EXT] Написать unit тест для TagSelectorComponent в frontend/src/app/features/tags/components/tag-selector.component.spec.ts
 - [ ] T358 [P] [EXT] Написать unit тест для tags store в frontend/src/app/features/tags/store/tags.reducer.spec.ts
 
 ### Testing: Files
 
-- [ ] T359 [EXT] Написать integration тест для FilesController в backend/src/test/java/com/sprinto/tms/integration/FilesControllerTest.java
-- [ ] T360 [P] [EXT] Написать unit тест для FileService в backend/src/test/java/com/sprinto/tms/unit/FileServiceTest.java
-- [ ] T361 [P] [EXT] Написать unit тест для FileStorageService в backend/src/test/java/com/sprinto/tms/unit/FileStorageServiceTest.java
-- [ ] T362 [P] [EXT] Написать unit тест для FileQuotaService в backend/src/test/java/com/sprinto/tms/unit/FileQuotaServiceTest.java
+- [ ] T359 [EXT] Написать integration тест для FilesController в backend/src/test/java/ru/get/tms/integration/FilesControllerTest.java
+- [ ] T360 [P] [EXT] Написать unit тест для FileService в backend/src/test/java/ru/get/tms/unit/FileServiceTest.java
+- [ ] T361 [P] [EXT] Написать unit тест для FileStorageService в backend/src/test/java/ru/get/tms/unit/FileStorageServiceTest.java
+- [ ] T362 [P] [EXT] Написать unit тест для FileQuotaService в backend/src/test/java/ru/get/tms/unit/FileQuotaServiceTest.java
 - [ ] T363 [P] [EXT] Написать unit тест для FileUploadComponent в frontend/src/app/shared/components/file-upload.component.spec.ts
 - [ ] T364 [P] [EXT] Написать unit тест для FileUploadService в frontend/src/app/core/services/file-upload.service.spec.ts
 
@@ -998,29 +998,29 @@
 
 ### Additional Unit Tests - Backend Services (Phase 3-4)
 
-- [ ] T365 [P] Написать unit тест для ProjectService в backend/src/test/java/com/sprinto/tms/unit/ProjectServiceTest.java
-- [ ] T366 [P] Написать unit тест для ProjectMemberService в backend/src/test/java/com/sprinto/tms/unit/ProjectMemberServiceTest.java
-- [ ] T367 [P] Написать unit тест для ProjectPermissionEvaluator в backend/src/test/java/com/sprinto/tms/unit/ProjectPermissionEvaluatorTest.java
+- [ ] T365 [P] Написать unit тест для ProjectService в backend/src/test/java/ru/get/tms/unit/ProjectServiceTest.java
+- [ ] T366 [P] Написать unit тест для ProjectMemberService в backend/src/test/java/ru/get/tms/unit/ProjectMemberServiceTest.java
+- [ ] T367 [P] Написать unit тест для ProjectPermissionEvaluator в backend/src/test/java/ru/get/tms/unit/ProjectPermissionEvaluatorTest.java
 
 ### Additional Unit Tests - Backend Services (Phase 5-7)
 
-- [ ] T368 [P] Написать unit тест для DashboardService в backend/src/test/java/com/sprinto/tms/unit/DashboardServiceTest.java
-- [ ] T369 [P] Написать unit тест для UserSettingsService в backend/src/test/java/com/sprinto/tms/unit/UserSettingsServiceTest.java
-- [ ] T370 [P] Написать unit тест для ReportService в backend/src/test/java/com/sprinto/tms/unit/ReportServiceTest.java
-- [ ] T371 [P] Написать unit тест для CsvExportService в backend/src/test/java/com/sprinto/tms/unit/CsvExportServiceTest.java
-- [ ] T372 [P] Написать unit тест для NotificationRouter в backend/src/test/java/com/sprinto/tms/unit/NotificationRouterTest.java
-- [ ] T373 [P] Написать unit тест для PushNotificationService в backend/src/test/java/com/sprinto/tms/unit/PushNotificationServiceTest.java
+- [ ] T368 [P] Написать unit тест для DashboardService в backend/src/test/java/ru/get/tms/unit/DashboardServiceTest.java
+- [ ] T369 [P] Написать unit тест для UserSettingsService в backend/src/test/java/ru/get/tms/unit/UserSettingsServiceTest.java
+- [ ] T370 [P] Написать unit тест для ReportService в backend/src/test/java/ru/get/tms/unit/ReportServiceTest.java
+- [ ] T371 [P] Написать unit тест для CsvExportService в backend/src/test/java/ru/get/tms/unit/CsvExportServiceTest.java
+- [ ] T372 [P] Написать unit тест для NotificationRouter в backend/src/test/java/ru/get/tms/unit/NotificationRouterTest.java
+- [ ] T373 [P] Написать unit тест для PushNotificationService в backend/src/test/java/ru/get/tms/unit/PushNotificationServiceTest.java
 
 ### Additional Unit Tests - Backend Services (Phase 8-11)
 
-- [ ] T374 [P] Написать unit тест для CalendarSyncScheduler в backend/src/test/java/com/sprinto/tms/unit/CalendarSyncSchedulerTest.java
-- [ ] T375 [P] Написать unit тест для CalendarEventMapper в backend/src/test/java/com/sprinto/tms/unit/CalendarEventMapperTest.java
-- [ ] T376 [P] Написать unit тест для AnalyticsService в backend/src/test/java/com/sprinto/tms/unit/AnalyticsServiceTest.java
-- [ ] T377 [P] Написать unit тест для LeaderboardService в backend/src/test/java/com/sprinto/tms/unit/LeaderboardServiceTest.java
-- [ ] T378 [P] Написать unit тест для BurndownChartService в backend/src/test/java/com/sprinto/tms/unit/BurndownChartServiceTest.java
-- [ ] T379 [P] Написать unit тест для ProductivityScoreService в backend/src/test/java/com/sprinto/tms/unit/ProductivityScoreServiceTest.java
-- [ ] T380 [P] Написать unit тест для RatingService в backend/src/test/java/com/sprinto/tms/unit/RatingServiceTest.java
-- [ ] T381 [P] Написать unit тест для TaskDependencyService в backend/src/test/java/com/sprinto/tms/unit/TaskDependencyServiceTest.java
+- [ ] T374 [P] Написать unit тест для CalendarSyncScheduler в backend/src/test/java/ru/get/tms/unit/CalendarSyncSchedulerTest.java
+- [ ] T375 [P] Написать unit тест для CalendarEventMapper в backend/src/test/java/ru/get/tms/unit/CalendarEventMapperTest.java
+- [ ] T376 [P] Написать unit тест для AnalyticsService в backend/src/test/java/ru/get/tms/unit/AnalyticsServiceTest.java
+- [ ] T377 [P] Написать unit тест для LeaderboardService в backend/src/test/java/ru/get/tms/unit/LeaderboardServiceTest.java
+- [ ] T378 [P] Написать unit тест для BurndownChartService в backend/src/test/java/ru/get/tms/unit/BurndownChartServiceTest.java
+- [ ] T379 [P] Написать unit тест для ProductivityScoreService в backend/src/test/java/ru/get/tms/unit/ProductivityScoreServiceTest.java
+- [ ] T380 [P] Написать unit тест для RatingService в backend/src/test/java/ru/get/tms/unit/RatingServiceTest.java
+- [ ] T381 [P] Написать unit тест для TaskDependencyService в backend/src/test/java/ru/get/tms/unit/TaskDependencyServiceTest.java
 
 ### Additional Unit Tests - Frontend Components (Phase 3-4)
 
@@ -1050,13 +1050,13 @@
 
 ### Contract Tests
 
-- [ ] T399 Настроить Spring Cloud Contract / Pact для contract testing в backend/src/test/java/com/sprinto/tms/contract/
-- [ ] T400 Написать contract test для AuthController в backend/src/test/java/com/sprinto/tms/contract/AuthControllerContractTest.java
-- [ ] T401 [P] Написать contract test для TaskController в backend/src/test/java/com/sprinto/tms/contract/TaskControllerContractTest.java
-- [ ] T402 [P] Написать contract test для ProjectController в backend/src/test/java/com/sprinto/tms/contract/ProjectControllerContractTest.java
-- [ ] T403 [P] Написать contract test для TimeTrackingController в backend/src/test/java/com/sprinto/tms/contract/TimeTrackingControllerContractTest.java
-- [ ] T404 [P] Написать contract test для ReportsController в backend/src/test/java/com/sprinto/tms/contract/ReportsControllerContractTest.java
-- [ ] T405 [P] Написать contract test для NotificationsController в backend/src/test/java/com/sprinto/tms/contract/NotificationsControllerContractTest.java
+- [ ] T399 Настроить Spring Cloud Contract / Pact для contract testing в backend/src/test/java/ru/get/tms/contract/
+- [ ] T400 Написать contract test для AuthController в backend/src/test/java/ru/get/tms/contract/AuthControllerContractTest.java
+- [ ] T401 [P] Написать contract test для TaskController в backend/src/test/java/ru/get/tms/contract/TaskControllerContractTest.java
+- [ ] T402 [P] Написать contract test для ProjectController в backend/src/test/java/ru/get/tms/contract/ProjectControllerContractTest.java
+- [ ] T403 [P] Написать contract test для TimeTrackingController в backend/src/test/java/ru/get/tms/contract/TimeTrackingControllerContractTest.java
+- [ ] T404 [P] Написать contract test для ReportsController в backend/src/test/java/ru/get/tms/contract/ReportsControllerContractTest.java
+- [ ] T405 [P] Написать contract test для NotificationsController в backend/src/test/java/ru/get/tms/contract/NotificationsControllerContractTest.java
 
 ### Additional E2E Tests
 
